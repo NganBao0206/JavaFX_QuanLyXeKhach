@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="719.0" prefWidth="1158.0" style="-fx-background-color: #fbf9fe;" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ou.oubus.AdminController">
+   <left>
+      <VBox prefHeight="719.0" prefWidth="197.0" style="-fx-padding: 0; -fx-spacing: 40;" styleClass="menu" BorderPane.alignment="CENTER">
+         <children>
+            <HBox alignment="CENTER" prefHeight="80.0" prefWidth="198.0" style="-fx-spacing: 10; -fx-padding: 10 0 0 0;">
+               <children>
+                  <ImageView fitHeight="46.0" fitWidth="53.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/logo3.png" />
+                     </image>
+                  </ImageView>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="titleText" text="OUBUS" />
+               </children>
+            </HBox>
+            <Button fx:id="btnHome" mnemonicParsing="false" onAction="#selectItem" prefHeight="34.0" prefWidth="198.0" text="home">
+               <graphic>
+                  <HBox alignment="CENTER_LEFT" prefHeight="61.0" prefWidth="171.0">
+                     <children>
+                        <BorderPane prefHeight="27.0" prefWidth="38.0">
+                           <center>
+                              <SVGPath content="M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5Z" BorderPane.alignment="CENTER" />
+                           </center>
+                        </BorderPane>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="normalText" text="Trang chủ" />
+                     </children>
+                  </HBox>
+               </graphic>
+               <styleClass>
+                  <String fx:value="menuSelectedItem" />
+                  <String fx:value="menuItem" />
+               </styleClass>
+            </Button>
+            <Button fx:id="btnStaff" layoutX="10.0" layoutY="186.0" mnemonicParsing="false" onAction="#selectItem" prefHeight="34.0" prefWidth="198.0" styleClass="menuItem" text="staff">
+               <graphic>
+                  <HBox alignment="CENTER_LEFT" prefHeight="61.0" prefWidth="171.0">
+                     <children>
+                        <BorderPane prefHeight="27.0" prefWidth="38.0">
+                           <center>
+                              <SVGPath content="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7Zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216ZM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7Zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216ZM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" BorderPane.alignment="CENTER" />
+                           </center>
+                        </BorderPane>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="normalText" text="Nhân viên" />
+                     </children>
+                  </HBox>
+               </graphic>
+            </Button>
+            <Button fx:id="btnLocation" layoutX="10.0" layoutY="383.0" mnemonicParsing="false" onAction="#selectItem" prefHeight="34.0" prefWidth="198.0" styleClass="menuItem" text="location">
+               <graphic>
+                  <HBox alignment="CENTER_LEFT" prefHeight="61.0" prefWidth="171.0">
+                     <children>
+                        <BorderPane prefHeight="27.0" prefWidth="38.0">
+                           <center>
+                              <SVGPath content="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z" BorderPane.alignment="CENTER" />
+                           </center>
+                        </BorderPane>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="normalText" text="Địa điểm" />
+                     </children>
+                  </HBox>
+               </graphic>
+            </Button>
+            <Button fx:id="btnBus" layoutX="10.0" layoutY="317.0" mnemonicParsing="false" onAction="#selectItem" prefHeight="34.0" prefWidth="198.0" styleClass="menuItem" text="bus">
+               <graphic>
+                  <HBox alignment="CENTER_LEFT" prefHeight="61.0" prefWidth="171.0">
+                     <children>
+                        <BorderPane prefHeight="27.0" prefWidth="38.0">
+                           <center>
+                              <SVGPath content="M16 7a1 1 0 0 1-1 1v3.5c0 .818-.393 1.544-1 2v2a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5V14H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2a2.496 2.496 0 0 1-1-2V8a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1V2.64C1 1.452 1.845.408 3.064.268A43.608 43.608 0 0 1 8 0c2.1 0 3.792.136 4.936.268C14.155.408 15 1.452 15 2.64V4a1 1 0 0 1 1 1v2ZM3.552 3.22A43.306 43.306 0 0 1 8 3c1.837 0 3.353.107 4.448.22a.5.5 0 0 0 .104-.994A44.304 44.304 0 0 0 8 2c-1.876 0-3.426.109-4.552.226a.5.5 0 1 0 .104.994ZM8 4c-1.876 0-3.426.109-4.552.226A.5.5 0 0 0 3 4.723v3.554a.5.5 0 0 0 .448.497C4.574 8.891 6.124 9 8 9c1.876 0 3.426-.109 4.552-.226A.5.5 0 0 0 13 8.277V4.723a.5.5 0 0 0-.448-.497A44.304 44.304 0 0 0 8 4Zm-3 7a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm8 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm-7 0a1 1 0 0 0 1 1h2a1 1 0 1 0 0-2H7a1 1 0 0 0-1 1Z" BorderPane.alignment="CENTER" />
+                           </center>
+                        </BorderPane>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="normalText" text="Phương tiện" />
+                     </children>
+                  </HBox>
+               </graphic>
+            </Button>
+            <Button fx:id="btnRoute" layoutX="10.0" layoutY="317.0" mnemonicParsing="false" onAction="#selectItem" prefHeight="34.0" prefWidth="198.0" styleClass="menuItem" text="route">
+               <graphic>
+                  <HBox alignment="CENTER_LEFT" prefHeight="61.0" prefWidth="171.0">
+                     <children>
+                        <BorderPane prefHeight="27.0" prefWidth="38.0">
+                           <center>
+                              <SVGPath content="M16 .5a.5.5 0 0 0-.598-.49L10.5.99 5.598.01a.5.5 0 0 0-.196 0l-5 1A.5.5 0 0 0 0 1.5v14a.5.5 0 0 0 .598.49l4.902-.98 4.902.98a.502.502 0 0 0 .196 0l5-1A.5.5 0 0 0 16 14.5V.5zM5 14.09V1.11l.5-.1.5.1v12.98l-.402-.08a.498.498 0 0 0-.196 0L5 14.09zm5 .8V1.91l.402.08a.5.5 0 0 0 .196 0L11 1.91v12.98l-.5.1-.5-.1zM16 .5a.5.5 0 0 0-.598-.49L10.5.99 5.598.01a.5.5 0 0 0-.196 0l-5 1A.5.5 0 0 0 0 1.5v14a.5.5 0 0 0 .598.49l4.902-.98 4.902.98a.502.502 0 0 0 .196 0l5-1A.5.5 0 0 0 16 14.5V.5zM5 14.09V1.11l.5-.1.5.1v12.98l-.402-.08a.498.498 0 0 0-.196 0L5 14.09zm5 .8V1.91l.402.08a.5.5 0 0 0 .196 0L11 1.91v12.98l-.5.1-.5-.1z" BorderPane.alignment="CENTER" />
+                           </center>
+                        </BorderPane>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="normalText" text="Tuyến xe" />
+                     </children>
+                  </HBox>
+               </graphic>
+            </Button>
+            <Button fx:id="btnBusTrip" layoutX="10.0" layoutY="120.0" mnemonicParsing="false" onAction="#selectItem" prefHeight="34.0" prefWidth="198.0" styleClass="menuItem" text="busTrip">
+               <graphic>
+                  <HBox alignment="CENTER_LEFT" prefHeight="61.0" prefWidth="171.0">
+                     <children>
+                        <BorderPane prefHeight="27.0" prefWidth="38.0">
+                           <center>
+                              <SVGPath content="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zm9.954 3H2.545c-.3 0-.545.224-.545.5v1c0 .276.244.5.545.5h10.91c.3 0 .545-.224.545-.5v-1c0-.276-.244-.5-.546-.5zM10 7a1 1 0 0 0 0 2h5V7h-5zm-4 4a1 1 0 0 0-1-1H1v2h4a1 1 0 0 0 1-1M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zm9.954 3H2.545c-.3 0-.545.224-.545.5v1c0 .276.244.5.545.5h10.91c.3 0 .545-.224.545-.5v-1c0-.276-.244-.5-.546-.5zM10 7a1 1 0 0 0 0 2h5V7h-5zm-4 4a1 1 0 0 0-1-1H1v2h4a1 1 0 0 0 1-1z" BorderPane.alignment="CENTER" />
+                           </center>
+                        </BorderPane>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="normalText" text="Chuyến xe" />
+                     </children>
+                  </HBox>
+               </graphic>
+            </Button>
+         </children>
+      </VBox>
+   </left>
+   <center>
+      <GridPane fx:id="tabContainer" BorderPane.alignment="CENTER">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <GridPane fx:id="tabHome" layoutX="10.0" layoutY="10.0">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints maxHeight="350.8666748046875" minHeight="10.0" prefHeight="248.7999755859375" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="474.6666564941407" minHeight="10.0" prefHeight="470.40002441406256" vgrow="SOMETIMES" />
+               </rowConstraints>
+            </GridPane>
+            <GridPane fx:id="tabStaff" layoutX="10.0" layoutY="10.0">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints maxHeight="350.8666748046875" minHeight="10.0" prefHeight="248.7999755859375" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="474.6666564941407" minHeight="10.0" prefHeight="470.40002441406256" vgrow="SOMETIMES" />
+               </rowConstraints>
+            </GridPane>
+            <GridPane fx:id="tabLocation" visible="false">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints maxHeight="350.8666748046875" minHeight="10.0" prefHeight="88.4" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="474.6666564941407" minHeight="10.0" prefHeight="146.79999999999998" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="489.6666900634765" minHeight="10.0" prefHeight="489.6666900634765" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Pane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="2">
+                     <children>
+                        <VBox layoutX="55.0" layoutY="7.0" prefHeight="457.0" prefWidth="850.0">
+                           <children>
+                              <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="42.0" prefWidth="830.0">
+                                 <children>
+                                    <BorderPane prefHeight="70.0" prefWidth="86.0" />
+                                    <Text fx:id="txtId1" strokeType="OUTSIDE" strokeWidth="0.0" text="ID" wrappingWidth="78.93664360046387">
+                                       <styleClass>
+                                          <String fx:value="normalText" />
+                                          <String fx:value="darkText" />
+                                       </styleClass>
+                                    </Text>
+                                    <Text fx:id="txtName1" layoutX="96.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Tên địa điểm" wrappingWidth="501.3367328643799">
+                                       <styleClass>
+                                          <String fx:value="normalText" />
+                                          <String fx:value="darkText" />
+                                       </styleClass>
+                                    </Text>
+                                    <BorderPane prefHeight="70.0" prefWidth="58.0">
+                                       <center>
+                                          <Text fx:id="txtId11" strokeType="OUTSIDE" strokeWidth="0.0" text="Sửa" wrappingWidth="38.40327262878418" BorderPane.alignment="CENTER">
+                                             <styleClass>
+                                                <String fx:value="normalText" />
+                                                <String fx:value="darkText" />
+                                             </styleClass>
+                                          </Text>
+                                       </center>
+                                    </BorderPane>
+                                    <BorderPane layoutX="628.0" layoutY="10.0" prefHeight="70.0" prefWidth="113.0">
+                                       <center>
+                                          <Text fx:id="txtId111" strokeType="OUTSIDE" strokeWidth="0.0" text="Xóa" wrappingWidth="38.40327262878418" BorderPane.alignment="CENTER">
+                                             <styleClass>
+                                                <String fx:value="normalText" />
+                                                <String fx:value="darkText" />
+                                             </styleClass>
+                                          </Text>
+                                       </center>
+                                    </BorderPane>
+                                 </children>
+                                 <stylesheets>
+                                    <URL value="@../../css/style.css" />
+                                    <URL value="@../css/style.css" />
+                                 </stylesheets>
+                              </HBox>
+                              <ScrollPane prefHeight="422.0" prefWidth="850.0" style="-fx-background-color: #fbf9fe;">
+                                 <content>
+                                    <VBox fx:id="listLocations" prefHeight="30.0" prefWidth="834.0" styleClass="listContainer" />
+                                 </content>
+                              </ScrollPane>
+                           </children>
+                        </VBox>
+                     </children>
+                  </Pane>
+                  <GridPane>
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="960.0" minWidth="0.0" prefWidth="561.600048828125" />
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="960.0" minWidth="0.0" prefWidth="399.199951171875" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints maxHeight="125.93331756591797" minHeight="10.0" prefHeight="76.8" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <AnchorPane prefHeight="129.0" prefWidth="562.0">
+                           <children>
+                              <Text layoutX="20.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="titleText" text="Địa điểm" />
+                           </children>
+                        </AnchorPane>
+                        <BorderPane prefHeight="200.0" prefWidth="200.0" style="-fx-padding: 15;" GridPane.columnIndex="1">
+                           <center>
+                              <HBox alignment="CENTER" styleClass="box-input2" BorderPane.alignment="CENTER">
+                                 <children>
+                                    <TextField fx:id="txtSearchLocation" prefHeight="38.0" prefWidth="297.0" promptText="Tìm kiếm">
+                                       <styleClass>
+                                          <String fx:value="input" />
+                                          <String fx:value="normalText" />
+                                       </styleClass>
+                                    </TextField>
+                                    <BorderPane prefHeight="51.0" prefWidth="65.0">
+                                       <center>
+                                          <SVGPath content="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" styleClass="dark" BorderPane.alignment="CENTER" />
+                                       </center>
+                                    </BorderPane>
+                                 </children>
+                              </HBox>
+                           </center>
+                        </BorderPane>
+                     </children>
+                  </GridPane>
+                  <Pane prefHeight="99.0" prefWidth="960.0" GridPane.rowIndex="1">
+                     <children>
+                        <VBox layoutX="37.0" layoutY="4.0" prefHeight="135.0" prefWidth="875.0" style="-fx-background-color: white; -fx-background-radius: 20; -fx-padding: 20;">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Thêm địa điểm" wrappingWidth="825.3366317749023">
+                                 <styleClass>
+                                    <String fx:value="normalText" />
+                                    <String fx:value="purpleText" />
+                                 </styleClass>
+                              </Text>
+                              <HBox prefHeight="100.0" prefWidth="200.0" style="-fx-padding: 10; -fx-spacing: 40;">
+                                 <children>
+                                    <HBox alignment="CENTER" prefHeight="53.0" prefWidth="669.0" styleClass="box-input3">
+                                       <children>
+                                          <TextField fx:id="txtNewLocation" prefHeight="38.0" prefWidth="666.0" promptText="Tên địa điểm mới">
+                                             <styleClass>
+                                                <String fx:value="input" />
+                                                <String fx:value="normalText" />
+                                             </styleClass>
+                                          </TextField>
+                                       </children>
+                                    </HBox>
+                                    <Button mnemonicParsing="false" onAction="#addItemLocation" prefHeight="53.0" prefWidth="203.0" style="-fx-background-radius: 15;" text="Thêm">
+                                       <styleClass>
+                                          <String fx:value="btn" />
+                                          <String fx:value="normalText" />
+                                       </styleClass>
+                                    </Button>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </Pane>
+               </children>
+            </GridPane>
+            <GridPane>
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
+                    <tabs>
+                      <Tab text="Xem">
+                        <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                        </content>
+                      </Tab>
+                        <Tab text="Chi tiết">
+                          <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                          </content>
+                        </Tab>
+                      <Tab text="Sửa">
+                        <content>
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                        </content>
+                      </Tab>
+                    </tabs>
+                  </TabPane>
+               </children>
+            </GridPane>
+         </children>
+      </GridPane>
+   </center>
+</BorderPane>

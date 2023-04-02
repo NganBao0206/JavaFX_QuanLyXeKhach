@@ -1,0 +1,4 @@
+--patch-module
+com.ou.oubus=_
+--add-reads
+com.ou.oubus=ALL-UNNAMED

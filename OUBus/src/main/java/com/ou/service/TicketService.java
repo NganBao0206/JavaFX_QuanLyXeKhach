@@ -65,6 +65,7 @@ public class TicketService {
         return tickets;
     }
     
+    
     public List<Ticket> getTickets() throws SQLException
     {
         List<Ticket> tickets = new ArrayList<>();
@@ -104,4 +105,25 @@ public class TicketService {
         }
     }
     
+     
+    public boolean changeStatusToBuy(Ticket t) throws SQLException
+    {
+        try(Connection conn = JdbcUtils.getConn())
+        {
+            conn.setAutoCommit(false);
+            String sql = "UPDATE ticket set status = ? WHERE id = ?";
+            PreparedStatement stm = conn.prepareCall(sql);
+            stm.setNString(1,  "purchased");
+            stm.setNString(2,  t.getId());
+            stm.executeUpdate();
+            try {
+                conn.commit();
+                return true;
+            } catch (SQLException ex) {
+                System.err.println(ex.getMessage());
+                return false;
+            }
+        }
+    }
+     
 }

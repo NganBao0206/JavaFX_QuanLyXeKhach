@@ -494,7 +494,25 @@ public class EmployeeController implements Initializable {
         }
     }
     
-    public void ConfirmBuy(){
-        
+    public void changeBookToBuy() throws SQLException 
+    {
+        if (tbTicket.getSelectionModel().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Bạn chưa chọn vé nào", ButtonType.OK);
+            alert.showAndWait();
+            return;
+        }
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Xác nhận mua vé?");
+        alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.YES) {
+            Ticket selectedItem = (Ticket) tbTicket.getSelectionModel().getSelectedItem();
+            if (selectedItem != null) {
+                ts.changeStatusToBuy(selectedItem);
+                Alert al = new Alert(Alert.AlertType.INFORMATION,"Thành công");
+                al.show();
+                loadTableTicketData();
+            }
+        }
     }
+    
 }

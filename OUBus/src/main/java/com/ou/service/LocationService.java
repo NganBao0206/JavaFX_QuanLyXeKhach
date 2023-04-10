@@ -94,5 +94,20 @@ public class LocationService {
         }
     
     }
+    
+    public List<Location> getLocations() throws SQLException {
+        List<Location> locations = new ArrayList<>();
+        try (Connection conn = JdbcUtils.getConn()) {
+            String sql = "SELECT * FROM location";
+            PreparedStatement stm = conn.prepareCall(sql);
+            ResultSet rs = stm.executeQuery(); 
+            while (rs.next()) {
+                int id = rs.getInt("ID");
+                String name = rs.getNString("Name");
+                locations.add(new Location(id, name));
+            }
+        }
+        return locations;
+    }
 }
 

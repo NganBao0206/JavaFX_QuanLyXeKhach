@@ -69,4 +69,10 @@ public class Customer {
         this.phone = phone;
     }
     
+    public Customer(String id, String name, String phone) {
+        this.id = id;
+        this.name = name;
+        this.phone = phone;
+    }
+    
 }

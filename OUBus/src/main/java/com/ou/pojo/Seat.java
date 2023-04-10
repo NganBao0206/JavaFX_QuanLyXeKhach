@@ -39,13 +39,13 @@ public class Seat {
     }
     private int id;
     private String name;
-    
+
     public Seat() {
-        
+
     }
-    
-    public Seat(String name)
-    {
+
+    public Seat(int id, String name) {
+        this.id = id;
         this.name = name;
     }
 }

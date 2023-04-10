@@ -16,8 +16,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 
 /**
  *

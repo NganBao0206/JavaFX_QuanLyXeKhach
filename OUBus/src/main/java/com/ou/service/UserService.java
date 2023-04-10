@@ -48,11 +48,12 @@ public class UserService {
             stm.setString(1, username);
             ResultSet rs = stm.executeQuery();
             if (rs.next()) {
-                User u = new User();
-                u.setUsername(rs.getNString("Username"));
-                u.setPassword(rs.getNString("Password"));
-                u.setUserRole(rs.getNString("UserRole"));
-                return u;
+                String ID = rs.getNString("ID");
+                String Username = rs.getNString("Username");
+                String Password = rs.getNString("Password");
+                String Name = rs.getNString("Name");
+                String UserRole = rs.getNString("UserRole");
+                return new User(ID, Username, Password, Name, UserRole);
             } else {
                 return null;
             }
@@ -71,11 +72,12 @@ public class UserService {
             stm.setString(2, username);
             ResultSet rs = stm.executeQuery();
             if (rs.next()) {
-                User u = new User();
-                u.setUsername(rs.getNString("Username"));
-                u.setPassword(rs.getNString("Password"));
-                u.setUserRole(rs.getNString("UserRole"));
-                return u;
+                String ID = rs.getNString("ID");
+                String Username = rs.getNString("Username");
+                String Password = rs.getNString("Password");
+                String Name = rs.getNString("Name");
+                String UserRole = rs.getNString("UserRole");
+                return new User(ID, Username, Password, Name, UserRole);
             } else {
                 return null;
             }
@@ -88,10 +90,16 @@ public class UserService {
 
     public AuthenticationResult authenticatedUser(String username, String password) throws SQLException {
         User u = getUserByUsername(username);
+        
+
         if (u == null) {
             return new AuthenticationResult(false, "Wrong username", "");
         }
         if (BCrypt.checkpw(password, u.getPassword())) {
+            System.out.println(u.getId());
+            CurrentUser currentUser = CurrentUser.getInstance();
+            currentUser.setUser(u);
+            
             return new AuthenticationResult(true, null, u.getUserRole());
         }
         return new AuthenticationResult(false, "Wrong password", "");

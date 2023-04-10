@@ -1,18 +1,17 @@
 package com.ou.oubus;
 
 import com.ou.service.AuthenticationResult;
+import com.ou.service.CurrentUser;
 import com.ou.service.UserService;
 import java.io.IOException;
 import java.sql.SQLException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 
-public class login {
+public class Login {
     @FXML private TextField txtUsername;
     @FXML private TextField txtPassword;
     
@@ -41,8 +40,9 @@ public class login {
             }
             else if ("staff".equals(result.getUserRole()))
             {
-                alert = new Alert(Alert.AlertType.INFORMATION, "Đăng nhập thành công bạn là " + result.getUserRole(), ButtonType.OK);
+                alert = new Alert(Alert.AlertType.INFORMATION, "Đăng nhập thành công bạn là " + result.getUserRole() + "  " + CurrentUser.getInstance().getUser().getName(), ButtonType.OK);
                 alert.show();
+                App.setRoot("employee");
             }
         }
         else

@@ -386,3 +386,19 @@ Hbox.listItem {
     -fx-background-color: #73FDC8;
     -fx-text-background-color: white;
 }
+
+.seat {
+    -fx-background-color: transparent;
+}
+
+.seat SVGPath{
+    -fx-fill: #ac7ef1; 
+}
+
+.selectedSeat SVGPath{
+    -fx-fill: #8CE4D5;
+}
+
+.seat:disabled SVGPath{
+    -fx-fill: #acacac; 
+}

@@ -82,12 +82,15 @@ public class EmployeeController implements Initializable {
     private Text txtTime;
     @FXML
     private VBox vbCus;
+    @FXML
+    private TextField txtSearchCustomer;
 
     private GridPane selectedTab;
     private final List<Button> btn = new ArrayList<>();
 
     /**
      * Initializes the controller class.
+     *
      * @param url
      * @param rb
      */
@@ -98,8 +101,15 @@ public class EmployeeController implements Initializable {
             loadTableBusTripColumns();
             loadTableTicketColumns();
             loadTableBusTripData(null, -1, -1);
-            loadTableTicketData();
+            loadTableTicketData(null);
             getLocations();
+            this.txtSearchCustomer.textProperty().addListener(e -> {
+                try {
+                    loadTableTicketData(txtSearchCustomer.getText());
+                } catch (SQLException ex) {
+                    Logger.getLogger(EmployeeController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
 
         } catch (SQLException ex) {
             Logger.getLogger(EmployeeController.class.getName()).log(Level.SEVERE, null, ex);
@@ -107,13 +117,13 @@ public class EmployeeController implements Initializable {
         Platform.runLater(() -> {
             try {
                 List<Seat> seats = ss.getSeats();
-                
+
                 for (int i = 0; i < seats.size(); i++) {
                     Button b = (Button) App.getScene().lookup("#" + seats.get(i).getName());
                     btn.add(b);
                 }
                 selectedTab = tabBuyTicket;
-                
+
             } catch (SQLException ex) {
                 Logger.getLogger(EmployeeController.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -218,13 +228,20 @@ public class EmployeeController implements Initializable {
             b.setDisable(false);
         }
 
-        List<Ticket> tickets = ts.getTickets(busTrip.getId());
+        List<Ticket> tickets = ts.getTicketsByBusTrip(busTrip.getId());
         for (Ticket t : tickets) {
             Seat s = ss.getSeat(t.getSeatId());
             Button b = (Button) App.getScene().lookup("#" + s.getName());
             b.setDisable(true);
         }
 
+    }
+
+    public void refresh() throws SQLException {
+        cbStart.getSelectionModel().select(null);
+        cbEnd.getSelectionModel().select(null);
+        date.setValue(null);
+        loadTableBusTripData(null, -1, -1);
     }
 
     public void buyTicket() throws SQLException {
@@ -329,10 +346,7 @@ public class EmployeeController implements Initializable {
                 } else {
                     nameCus.add(tfName);
                     phoneCus.add(tfPhone);
-                    Alert al = new Alert(Alert.AlertType.INFORMATION,"Mua vé thành công");
-                    al.show();
-                    tabChooseBuy.setVisible(true);
-                    tabComfirmBuy.setVisible(false);
+
                 }
             }
             for (int i = 0; i < listSelectedSeat.size(); i++) {
@@ -343,6 +357,12 @@ public class EmployeeController implements Initializable {
                     if (!ts.addTicket(t)) {
                         Alert al = new Alert(Alert.AlertType.ERROR, "Đã có lỗi xảy ra, không thể thêm");
                         al.show();
+                    } else {
+                        Alert al = new Alert(Alert.AlertType.INFORMATION, "Mua vé thành công");
+                        al.show();
+                        tabChooseBuy.setVisible(true);
+                        tabComfirmBuy.setVisible(false);
+                        loadTableTicketData(null);
                     }
 
                 } else {
@@ -356,8 +376,13 @@ public class EmployeeController implements Initializable {
                         }
                     }
                 }
+                Alert al = new Alert(Alert.AlertType.INFORMATION, "Mua vé thành công");
+                al.show();
+                tabChooseBuy.setVisible(true);
+                tabComfirmBuy.setVisible(false);
+                loadTableTicketData(null);
             }
-            loadTableTicketData();
+            loadTableTicketData(txtSearchCustomer.getText());
         }
     }
 
@@ -378,10 +403,7 @@ public class EmployeeController implements Initializable {
                 } else {
                     nameCus.add(tfName);
                     phoneCus.add(tfPhone);
-                    Alert al = new Alert(Alert.AlertType.INFORMATION,"Đặt vé thành công");
-                    al.show();
-                    tabChooseBuy.setVisible(true);
-                    tabComfirmBuy.setVisible(false);
+
                 }
             }
             for (int i = 0; i < listSelectedSeat.size(); i++) {
@@ -402,11 +424,22 @@ public class EmployeeController implements Initializable {
                         if (!ts.addTicket(t)) {
                             Alert al = new Alert(Alert.AlertType.ERROR, "Đã có lỗi xảy ra, không thể thêm");
                             al.show();
+                        } else {
+                            Alert al = new Alert(Alert.AlertType.INFORMATION, "Đặt vé thành công");
+                            al.show();
+                            tabChooseBuy.setVisible(true);
+                            tabComfirmBuy.setVisible(false);
+                            loadTableTicketData(null);
                         }
                     }
                 }
+                Alert al = new Alert(Alert.AlertType.INFORMATION, "Đặt vé thành công");
+                al.show();
+                tabChooseBuy.setVisible(true);
+                tabComfirmBuy.setVisible(false);
+                loadTableTicketData(null);
             }
-            loadTableTicketData();
+            loadTableTicketData(txtSearchCustomer.getText());
         }
     }
 
@@ -455,8 +488,8 @@ public class EmployeeController implements Initializable {
         this.tbTicket.getColumns().setAll(col, colCusName, colPhone, colSeatName, colStaffName, colStatus, colPrice, colDeparture, colDestination, colDepartureTime);
     }
 
-    private void loadTableTicketData() throws SQLException {
-        List<Ticket> lt = ts.getTickets();
+    private void loadTableTicketData(String keyword) throws SQLException {
+        List<Ticket> lt = ts.getTickets(keyword);
         this.tbTicket.getItems().clear();
         this.tbTicket.setItems(FXCollections.observableList(lt));
     }
@@ -473,6 +506,11 @@ public class EmployeeController implements Initializable {
         if (result.get() == ButtonType.YES) {
             Ticket selectedItem = (Ticket) tbTicket.getSelectionModel().getSelectedItem();
             if (selectedItem != null) {
+                if (selectedItem.getStatus().equals("purchased")) {
+                    Alert al = new Alert(Alert.AlertType.INFORMATION, "Không thể hủy vé đã mua");
+                    al.show();
+                    return;
+                }
                 String id = selectedItem.getId();
                 if (ts.deleteTicket(id) == true) {
                     Alert announce = new Alert(Alert.AlertType.INFORMATION, "Hủy vé thành công");
@@ -490,12 +528,13 @@ public class EmployeeController implements Initializable {
                         }
                     });
                 }
+
             }
+
         }
     }
-    
-    public void changeBookToBuy() throws SQLException 
-    {
+
+    public void changeBookToBuy() throws SQLException {
         if (tbTicket.getSelectionModel().isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.WARNING, "Bạn chưa chọn vé nào", ButtonType.OK);
             alert.showAndWait();
@@ -507,12 +546,17 @@ public class EmployeeController implements Initializable {
         if (result.get() == ButtonType.YES) {
             Ticket selectedItem = (Ticket) tbTicket.getSelectionModel().getSelectedItem();
             if (selectedItem != null) {
+                if (selectedItem.getStatus().equals("purchased")) {
+                    Alert al = new Alert(Alert.AlertType.INFORMATION, "Vé đã mua");
+                    al.show();
+                    return;
+                }
                 ts.changeStatusToBuy(selectedItem);
-                Alert al = new Alert(Alert.AlertType.INFORMATION,"Thành công");
+                Alert al = new Alert(Alert.AlertType.INFORMATION, "Thành công");
                 al.show();
-                loadTableTicketData();
+                loadTableTicketData(txtSearchCustomer.getText());
             }
         }
     }
-    
+
 }

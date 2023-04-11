@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +44,7 @@ public class TicketService {
         }
     }
     
-    public List<Ticket> getTickets(String bustripID) throws SQLException
+    public List<Ticket> getTicketsByBusTrip(String bustripID) throws SQLException
     {
         List<Ticket> tickets = new ArrayList<>();
         try (Connection conn = JdbcUtils.getConn())
@@ -66,13 +67,24 @@ public class TicketService {
     }
     
     
-    public List<Ticket> getTickets() throws SQLException
+    public List<Ticket> getTickets(String keyword) throws SQLException
     {
         List<Ticket> tickets = new ArrayList<>();
         try (Connection conn = JdbcUtils.getConn())
         {
-            String sql = "SELECT * FROM ticket t, seat s, customer c, user u ,bustrip bt, bus b, route r, location l1, location l2 WHERE t.StaffID = u.ID AND s.ID = t.SeatID AND t.CustomerID = c.ID AND t.BusTripID = bt.ID AND bt.BusID = b.ID AND bt.routeID = r.ID AND r.DepartureID = l1.ID AND r.DestinationID = l2.ID";
+            String sql = "SELECT * "
+                    + "FROM ticket t, seat s, customer c, user u ,bustrip bt, bus b, route r, location l1, location l2 "
+                    + "WHERE t.StaffID = u.ID AND s.ID = t.SeatID "
+                    + "AND t.CustomerID = c.ID AND t.BusTripID = bt.ID "
+                    + "AND bt.BusID = b.ID AND bt.routeID = r.ID "
+                    + "AND r.DepartureID = l1.ID AND r.DestinationID = l2.ID "
+                    + "AND bt.DepartureTime < ?";
+            if (keyword != null && !keyword.isEmpty()) 
+                sql += " and c.Name like concat('%', ?, '%')";
             PreparedStatement stm = conn.prepareCall(sql);
+            if (keyword != null && !keyword.isEmpty()) 
+                stm.setString(2, keyword);       
+            stm.setTimestamp(1, new Timestamp(System.currentTimeMillis() + 5 * 1000));
             ResultSet rs = stm.executeQuery(); 
             while (rs.next()) {
                 String id = rs.getString("ID");
@@ -111,7 +123,7 @@ public class TicketService {
         try(Connection conn = JdbcUtils.getConn())
         {
             conn.setAutoCommit(false);
-            String sql = "UPDATE ticket set status = ? WHERE id = ?";
+            String sql = "UPDATE ticket set status = ? WHERE id = ? AND status = 'booked'";
             PreparedStatement stm = conn.prepareCall(sql);
             stm.setNString(1,  "purchased");
             stm.setNString(2,  t.getId());
@@ -125,5 +137,6 @@ public class TicketService {
             }
         }
     }
-     
+    
+    
 }

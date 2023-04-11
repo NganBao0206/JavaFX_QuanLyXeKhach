@@ -80,9 +80,8 @@ DROP TABLE IF EXISTS `customer`;
 CREATE TABLE `customer` (
   `ID` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `Name` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  `Phone` varchar(13) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
-  PRIMARY KEY (`ID`),
-  UNIQUE KEY `Phone` (`Phone`)
+  `Phone` varchar(13) NOT NULL,
+  PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -92,6 +91,7 @@ CREATE TABLE `customer` (
 
 LOCK TABLES `customer` WRITE;
 /*!40000 ALTER TABLE `customer` DISABLE KEYS */;
+INSERT INTO `customer` VALUES ('14aa1b68-b209-4fa5-9e05-aeb57cd30c94','CVAKJ','134214'),('19035589-4218-4280-93e1-ec05e418060e','ưef','qửq'),('235f440e-324b-489f-af18-d0ab9f962412','ngân1','23'),('2e484214-4ee4-44b5-805b-7bfc4a1fa3ec','abc','123'),('6469936a-1510-4469-853c-8d1264ecde49','bsdfi','2342'),('76a95437-90af-4da0-b565-32b6cf3baa9a','dfg','123'),('87202f9a-792f-4053-b69b-cbb61598f216','Võ Phú Phát','123'),('a90eff49-88ed-41fd-87d5-056cf37db119','Ngà','12345'),('afa34f81-9a84-4a62-8caf-53c92bc04aa7','Nam','1230456'),('bf737c17-78c2-454d-9619-1b77eeaaf347','Ngân','123'),('c3e65801-19db-4c1e-b018-9b1bf59f7f23','qdq','eqwe'),('cff74f9b-3028-404a-bbb0-82a751634d82','NgAN','1234'),('eff2c379-a7d6-408d-8409-0136fc420c69','ƯEGWE','DỬQW'),('fb69a95e-5cea-43b5-afc0-b9b4d537f0e0','RQRW','QỬQWR');
 /*!40000 ALTER TABLE `customer` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -247,4 +247,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-04-10 21:13:45
+-- Dump completed on 2023-04-11 14:12:37

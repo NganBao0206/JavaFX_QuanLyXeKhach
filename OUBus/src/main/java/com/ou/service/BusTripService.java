@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -115,11 +116,10 @@ public class BusTripService {
                 Route middleRoute;
                 if (beforeTrip.getDestinationId() == routeBusTrip.getDepartureId()) {
                     middleRoute = new Route(-1, -1, 0, 0);
-                }
-                else {
-                    middleRoute = rsv.getRoute("-1",beforeTrip.getDestinationId(), routeBusTrip.getDepartureId());
+                } else {
+                    middleRoute = rsv.getRoute("-1", beforeTrip.getDestinationId(), routeBusTrip.getDepartureId());
                     if (middleRoute == null) {
-                        middleRoute = rsv.getRoute("-1",routeBusTrip.getDepartureId(), beforeTrip.getDestinationId());
+                        middleRoute = rsv.getRoute("-1", routeBusTrip.getDepartureId(), beforeTrip.getDestinationId());
                         if (middleRoute == null) {
                             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
                             LocalDateTime arrivalTimeOfBeforeTrip = beforeTrip.getDepartureTime().plusMinutes(beforeTrip.getTotalTime());
@@ -128,9 +128,9 @@ public class BusTripService {
                         }
                     }
                 }
-                
+
                 LocalDateTime minTime = arrivalTime.plusMinutes(middleRoute.getTotalTime());
-                
+
                 if (busTrip.getDepartureTime().isBefore(minTime)) {
                     System.out.println(beforeTrip.getId());
                     System.out.println(middleRoute.getDepartureId() + "  " + middleRoute.getDestinationId());
@@ -174,16 +174,15 @@ public class BusTripService {
             RouteService rsv = new RouteService();
             if (afterTrip != null) {
                 LocalDateTime arrivalTime = busTrip.getDepartureTime().plusMinutes(busTrip.getTotalTime());
-                
+
                 Route routeBusTrip = rsv.getRoute(busTrip.getRouteId());
                 Route middleRoute;
                 if (routeBusTrip.getDestinationId() == afterTrip.getDepartureId()) {
                     middleRoute = new Route(-1, -1, 0, 0);
-                }
-                else {
-                    middleRoute = rsv.getRoute("-1",routeBusTrip.getDestinationId(), afterTrip.getDepartureId());
+                } else {
+                    middleRoute = rsv.getRoute("-1", routeBusTrip.getDestinationId(), afterTrip.getDepartureId());
                     if (middleRoute == null) {
-                        middleRoute = rsv.getRoute("-1",afterTrip.getDepartureId(), routeBusTrip.getDestinationId());
+                        middleRoute = rsv.getRoute("-1", afterTrip.getDepartureId(), routeBusTrip.getDestinationId());
                         if (middleRoute == null) {
                             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
                             LocalDateTime arrivalTimeOfBeforeTrip = afterTrip.getDepartureTime();
@@ -237,6 +236,92 @@ public class BusTripService {
             }
             PreparedStatement stm = conn.prepareCall(sql);
             int index = 1;
+            if (departureDate != null) {
+                stm.setObject(index++, departureDate);
+            }
+            if (departureId != -1) {
+                stm.setInt(index++, departureId);
+            }
+            if (destinationId != -1) {
+                stm.setInt(index++, destinationId);
+            }
+
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                String id = rs.getNString("ID");
+                String routeId = rs.getNString("RouteID");
+                LocalDateTime departureTime = (LocalDateTime) rs.getObject("DepartureTime");
+                int busId = rs.getInt("BusID");
+                double price = rs.getDouble("Price");
+                double surcharge = rs.getDouble("Surcharge");
+                int totalTime = rs.getInt("TotalTime");
+                String departureName = rs.getNString("l1.Name");
+                String destinationName = rs.getNString("l2.Name");
+
+                busTrips.add(new BusTrip(id, routeId, departureTime, busId, price, surcharge, totalTime, departureName, destinationName));
+            }
+        }
+        return busTrips;
+    }
+
+    public BusTrip getBusTrip(LocalDate departureDate, int departureId, int destinationId) throws SQLException {
+        try (Connection conn = JdbcUtils.getConn()) {
+            String sql = "SELECT * FROM bustrip b, route r, location l1, location l2 WHERE b.RouteID = r.ID AND r.DepartureID = l1.ID AND r.DestinationID = l2.ID";
+            if (departureDate != null) {
+                sql += " AND DATE(b.DepartureTime) = ?";
+            }
+            if (departureId != -1) {
+                sql += " AND r.DepartureID = ?";
+            }
+            if (destinationId != -1) {
+                sql += " AND r.DestinationID = ?";
+            }
+            PreparedStatement stm = conn.prepareCall(sql);
+            int index = 1;
+            if (departureDate != null) {
+                stm.setObject(index++, departureDate);
+            }
+            if (departureId != -1) {
+                stm.setInt(index++, departureId);
+            }
+            if (destinationId != -1) {
+                stm.setInt(index++, destinationId);
+            }
+
+            ResultSet rs = stm.executeQuery();
+            String id = rs.getNString("ID");
+            String routeId = rs.getNString("RouteID");
+            LocalDateTime departureTime = (LocalDateTime) rs.getObject("DepartureTime");
+            int busId = rs.getInt("BusID");
+            double price = rs.getDouble("Price");
+            double surcharge = rs.getDouble("Surcharge");
+            int totalTime = rs.getInt("TotalTime");
+            String departureName = rs.getNString("l1.Name");
+            String destinationName = rs.getNString("l2.Name");
+            return new BusTrip(id, routeId, departureTime, busId, price, surcharge, totalTime, departureName, destinationName);
+        }
+    }
+
+public List<BusTrip> getBusTripsEmployee(LocalDate departureDate, int departureId, int destinationId) throws SQLException {
+        List<BusTrip> busTrips = new ArrayList<>();
+        try (Connection conn = JdbcUtils.getConn()) {
+            String sql = "SELECT * FROM bustrip b, route r, location l1, location l2 "
+                    + "WHERE b.RouteID = r.ID AND r.DepartureID = l1.ID "
+                    + "AND r.DestinationID = l2.ID "
+                    + "AND b.DepartureTime > ?";
+            if (departureDate != null) {
+                sql += " AND DATE(b.DepartureTime) = ?";
+            }
+            if (departureId != -1) {
+                sql += " AND r.DepartureID = ?";
+            }
+            if (destinationId != -1) {
+                sql += " AND r.DestinationID = ?";
+            }
+            PreparedStatement stm = conn.prepareCall(sql);
+            stm.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now().plusMinutes(5)));
+            System.out.println(LocalDateTime.now().plusMinutes(5));
+            int index = 2;
             if (departureDate != null) {
                 stm.setObject(index++, departureDate);
             }

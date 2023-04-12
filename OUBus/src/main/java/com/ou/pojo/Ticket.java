@@ -14,6 +14,20 @@ import java.util.UUID;
 public class Ticket {
 
     /**
+     * @return the Time
+     */
+    public LocalDateTime getTime() {
+        return time;
+    }
+
+    /**
+     * @param time
+     */
+    public void setTime(LocalDateTime time) {
+        this.time = time;
+    }
+
+    /**
      * @return the DepartureTime
      */
     public LocalDateTime getDepartureTime() {
@@ -257,6 +271,7 @@ public class Ticket {
     private String staffId;
     private String status;
     private double ticketPrice;
+    private LocalDateTime time;
     
     //EXTRA
     private String cusName;
@@ -287,7 +302,7 @@ public class Ticket {
         this.ticketPrice = ticketPrice;
     }
 
-    public Ticket(String customerId, String busTripId, int seatId, String staffId, String status, double ticketPrice) {
+    public Ticket(String customerId, String busTripId, int seatId, String staffId, String status, double ticketPrice ) {
         this.customerId = customerId;
         this.busTripId = busTripId;
         this.seatId = seatId;

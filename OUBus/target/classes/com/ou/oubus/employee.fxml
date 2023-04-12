@@ -807,13 +807,13 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                  <AnchorPane fx:id="tabViewTicket" prefHeight="200.0" prefWidth="200.0">
                      <children>
                         <Text layoutX="30.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20;" styleClass="titleText" text="Danh sách vé đã đặt" />
                         <TableView fx:id="tbTicket" layoutX="30.0" layoutY="80.0" prefHeight="300.0" prefWidth="845.0" />
-                        <Button fx:id="btnCancel" layoutX="375.0" layoutY="400.0" mnemonicParsing="false" onAction="#delTicket" prefHeight="40.0" prefWidth="100.0" style="-fx-background-color: FC2947;" styleClass="btnGreen" text="Hủy vé" />
+                        <Button fx:id="btnCancel" layoutX="400.0" layoutY="400.0" mnemonicParsing="false" onAction="#delTicket" prefHeight="40.0" prefWidth="100.0" style="-fx-background-color: FC2947;" styleClass="btnGreen" text="Hủy vé" />
                         <Button fx:id="btnBookToBuy" layoutX="675.0" layoutY="400.0" mnemonicParsing="false" onAction="#changeBookToBuy" prefHeight="40.0" prefWidth="200.0" styleClass="btnGreen" text="Xác nhận khách đã mua" />
-                        <Button fx:id="btnEdit" layoutX="500.0" layoutY="400.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" styleClass="btnPurple" text="Đổi chỗ ngồi" />
+                        <Button fx:id="btnEdit" layoutX="525.0" layoutY="400.0" mnemonicParsing="false" onAction="#editSeat" prefHeight="40.0" prefWidth="125.0" styleClass="btnPurple" text="Đổi vé" />
                         <HBox alignment="CENTER" layoutX="575.0" layoutY="21.0" maxHeight="1.7976931348623157E308" maxWidth="300.0" prefHeight="33.0" prefWidth="300.0" styleClass="box-input2">
                            <children>
                               <TextField fx:id="txtSearchCustomer" prefHeight="38.0" prefWidth="297.0" promptText="Tìm kiếm tên khách hàng">
@@ -830,7 +830,7 @@
                            </children>
                         </HBox>
                      </children></AnchorPane>
-                  <AnchorPane prefHeight="200.0" prefWidth="200.0" visible="false">
+                  <AnchorPane fx:id="tabChangeTicket" layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="200.0" visible="false">
                      <children>
                         <VBox alignment="TOP_CENTER" layoutX="550.0" prefHeight="476.0" prefWidth="355.0">
                            <children>
@@ -893,7 +893,7 @@
                                                 <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="normalText" text="A" />
                                              </children>
                                           </StackPane>
-                                          <Button fx:id="A011" layoutX="35.0" layoutY="191.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatA01" layoutX="35.0" layoutY="191.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -902,7 +902,7 @@
                                                 </StackPane>
                                              </graphic>
                                           </Button>
-                                          <Button fx:id="A021" layoutX="35.0" layoutY="211.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatA02" layoutX="35.0" layoutY="211.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -911,7 +911,7 @@
                                                 </StackPane>
                                              </graphic>
                                           </Button>
-                                          <Button fx:id="A031" layoutX="35.0" layoutY="231.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatA03" layoutX="35.0" layoutY="231.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -920,7 +920,7 @@
                                                 </StackPane>
                                              </graphic>
                                           </Button>
-                                          <Button fx:id="A041" layoutX="35.0" layoutY="251.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatA04" layoutX="35.0" layoutY="251.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -929,7 +929,7 @@
                                                 </StackPane>
                                              </graphic>
                                           </Button>
-                                          <Button fx:id="A051" layoutX="35.0" layoutY="271.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatA05" layoutX="35.0" layoutY="271.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -938,7 +938,7 @@
                                                 </StackPane>
                                              </graphic>
                                           </Button>
-                                          <Button fx:id="A061" layoutX="35.0" layoutY="291.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatA06" layoutX="35.0" layoutY="291.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -947,7 +947,7 @@
                                                 </StackPane>
                                              </graphic>
                                           </Button>
-                                          <Button fx:id="A071" layoutX="35.0" layoutY="311.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatA07" layoutX="35.0" layoutY="311.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -956,7 +956,7 @@
                                                 </StackPane>
                                              </graphic>
                                           </Button>
-                                          <Button fx:id="A081" layoutX="10.0" layoutY="11.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatA08" layoutX="10.0" layoutY="11.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -974,7 +974,7 @@
                                                 <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="normalText" text="B" />
                                              </children>
                                           </StackPane>
-                                          <Button fx:id="B011" layoutX="35.0" layoutY="191.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatB01" layoutX="35.0" layoutY="191.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -983,7 +983,7 @@
                                                 </StackPane>
                                              </graphic>
                                           </Button>
-                                          <Button fx:id="B021" layoutX="35.0" layoutY="211.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatB02" layoutX="35.0" layoutY="211.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -992,7 +992,7 @@
                                                 </StackPane>
                                              </graphic>
                                           </Button>
-                                          <Button fx:id="B031" layoutX="35.0" layoutY="231.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatB03" layoutX="35.0" layoutY="231.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -1001,7 +1001,7 @@
                                                 </StackPane>
                                              </graphic>
                                           </Button>
-                                          <Button fx:id="B041" layoutX="35.0" layoutY="251.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatB04" layoutX="35.0" layoutY="251.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -1010,7 +1010,7 @@
                                                 </StackPane>
                                              </graphic>
                                           </Button>
-                                          <Button fx:id="B051" layoutX="35.0" layoutY="271.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatB05" layoutX="35.0" layoutY="271.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -1019,7 +1019,7 @@
                                                 </StackPane>
                                              </graphic>
                                           </Button>
-                                          <Button fx:id="B061" layoutX="35.0" layoutY="291.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatB06" layoutX="35.0" layoutY="291.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -1028,7 +1028,7 @@
                                                 </StackPane>
                                              </graphic>
                                           </Button>
-                                          <Button fx:id="B071" layoutX="35.0" layoutY="311.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatB07" layoutX="35.0" layoutY="311.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -1037,7 +1037,7 @@
                                                 </StackPane>
                                              </graphic>
                                           </Button>
-                                          <Button fx:id="B081" layoutX="10.0" layoutY="11.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatB08" layoutX="10.0" layoutY="11.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -1056,7 +1056,7 @@
                                                 <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="normalText" text="C" />
                                              </children>
                                           </StackPane>
-                                          <Button fx:id="C011" layoutX="35.0" layoutY="191.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatC01" layoutX="35.0" layoutY="191.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -1065,7 +1065,7 @@
                                                 </StackPane>
                                              </graphic>
                                           </Button>
-                                          <Button fx:id="C021" layoutX="35.0" layoutY="211.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatC02" layoutX="35.0" layoutY="211.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -1074,7 +1074,7 @@
                                                 </StackPane>
                                              </graphic>
                                           </Button>
-                                          <Button fx:id="C031" layoutX="35.0" layoutY="231.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatC03" layoutX="35.0" layoutY="231.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -1083,7 +1083,7 @@
                                                 </StackPane>
                                              </graphic>
                                           </Button>
-                                          <Button fx:id="C041" layoutX="35.0" layoutY="251.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatC04" layoutX="35.0" layoutY="251.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -1092,7 +1092,7 @@
                                                 </StackPane>
                                              </graphic>
                                           </Button>
-                                          <Button fx:id="C051" layoutX="35.0" layoutY="271.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatC05" layoutX="35.0" layoutY="271.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -1101,7 +1101,7 @@
                                                 </StackPane>
                                              </graphic>
                                           </Button>
-                                          <Button fx:id="C061" layoutX="35.0" layoutY="291.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatC06" layoutX="35.0" layoutY="291.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -1110,7 +1110,7 @@
                                                 </StackPane>
                                              </graphic>
                                           </Button>
-                                          <Button fx:id="C071" layoutX="35.0" layoutY="311.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatC07" layoutX="35.0" layoutY="311.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -1119,7 +1119,7 @@
                                                 </StackPane>
                                              </graphic>
                                           </Button>
-                                          <Button fx:id="C081" layoutX="10.0" layoutY="11.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatC08" layoutX="10.0" layoutY="11.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -1137,7 +1137,7 @@
                                                 <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="normalText" text="D" />
                                              </children>
                                           </StackPane>
-                                          <Button fx:id="D011" layoutX="35.0" layoutY="191.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatD01" layoutX="35.0" layoutY="191.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -1146,7 +1146,7 @@
                                                 </StackPane>
                                              </graphic>
                                           </Button>
-                                          <Button fx:id="D021" layoutX="35.0" layoutY="211.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatD02" layoutX="35.0" layoutY="211.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -1155,7 +1155,7 @@
                                                 </StackPane>
                                              </graphic>
                                           </Button>
-                                          <Button fx:id="D031" layoutX="35.0" layoutY="231.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatD03" layoutX="35.0" layoutY="231.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -1164,7 +1164,7 @@
                                                 </StackPane>
                                              </graphic>
                                           </Button>
-                                          <Button fx:id="D041" layoutX="35.0" layoutY="251.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatD04" layoutX="35.0" layoutY="251.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -1173,7 +1173,7 @@
                                                 </StackPane>
                                              </graphic>
                                           </Button>
-                                          <Button fx:id="D051" layoutX="35.0" layoutY="271.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatD05" layoutX="35.0" layoutY="271.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -1182,7 +1182,7 @@
                                                 </StackPane>
                                              </graphic>
                                           </Button>
-                                          <Button fx:id="D061" layoutX="35.0" layoutY="291.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatD06" layoutX="35.0" layoutY="291.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -1191,7 +1191,7 @@
                                                 </StackPane>
                                              </graphic>
                                           </Button>
-                                          <Button fx:id="D071" layoutX="35.0" layoutY="311.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatD07" layoutX="35.0" layoutY="311.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -1200,7 +1200,7 @@
                                                 </StackPane>
                                              </graphic>
                                           </Button>
-                                          <Button fx:id="D081" layoutX="10.0" layoutY="11.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
+                                          <Button fx:id="seatD08" layoutX="10.0" layoutY="11.0" mnemonicParsing="false" onAction="#changeSeat" prefHeight="40.0" prefWidth="40.0" styleClass="seat">
                                              <graphic>
                                                 <StackPane>
                                                    <children>
@@ -1215,8 +1215,7 @@
                               </HBox>
                               <HBox alignment="CENTER" prefHeight="48.0" prefWidth="355.0">
                                  <children>
-                                    <Button mnemonicParsing="false" onAction="#delTicket" prefHeight="40.0" prefWidth="100.0" style="-fx-background-color: FC2947;" styleClass="btnGreen" text="Hủy vé" />
-                                    <Button mnemonicParsing="false" prefHeight="40.0" prefWidth="150.0" styleClass="btnGreen" text="Cập nhật chỗ">
+                                    <Button mnemonicParsing="false" onAction="#confirmEdit" prefHeight="40.0" prefWidth="150.0" styleClass="btnGreen" text="Cập nhật vé">
                                        <HBox.margin>
                                           <Insets left="20.0" />
                                        </HBox.margin>
@@ -1231,9 +1230,9 @@
                                  <children>
                                     <HBox prefHeight="60.0" prefWidth="60.0">
                                        <children>
-                                          <Button mnemonicParsing="false" onAction="#goBackChooseBuy" prefHeight="60.0" prefWidth="90.0" style="-fx-background-color: transparent;">
+                                          <Button mnemonicParsing="false" onAction="#turnBack" prefHeight="60.0" prefWidth="90.0" style="-fx-background-color: transparent;">
                                              <graphic>
-                                                <StackPane fx:id="btnChoose1" prefHeight="52.0" prefWidth="76.0">
+                                                <StackPane onDragDetected="#turnBack" prefHeight="52.0" prefWidth="76.0" scaleX="0.7" scaleY="0.7">
                                                    <children>
                                                       <SVGPath content="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" scaleX="2.0" scaleY="2.0" style="-fx-fill: #ac7ef1;" />
                                                    </children>
@@ -1254,79 +1253,15 @@
                               </HBox>
                               <VBox prefHeight="418.0" prefWidth="538.0" style="-fx-background-color: #FFFFFF;">
                                  <children>
-                                    <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="421.0">
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20;" styleClass="titleText" text="Chuyến xe" wrappingWidth="318.08056640625" />
+                                    <HBox alignment="CENTER_LEFT" prefHeight="70.0" prefWidth="518.0" style="-fx-spacing: 5;">
                                        <children>
-                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="normalText" text="Điểm xuất phát: " />
-                                          <HBox alignment="CENTER_RIGHT" prefHeight="30.0" prefWidth="327.0">
-                                             <HBox.margin>
-                                                <Insets right="20.0" />
-                                             </HBox.margin>
-                                             <children>
-                                                <Text fx:id="txtStartLocation1" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="normalText" />
-                                             </children>
-                                          </HBox>
+                                          <ComboBox fx:id="cbDeparture" minHeight="35.0" onAction="#loadBusTripEditing" prefHeight="25.0" prefWidth="170.0" promptText="Điểm xuất phát" style="-fx-background-color: #F1F1F1;" styleClass="comboBoxEditable" />
+                                          <ComboBox fx:id="cbDestination" layoutX="10.0" layoutY="10.0" minHeight="35.0" onAction="#loadBusTripEditing" prefHeight="25.0" prefWidth="170.0" promptText="Điểm đến" style="-fx-background-color: #f1f1f1;" styleClass="comboBoxEditable" />
+                                          <DatePicker fx:id="dpDepartureDate" onAction="#loadBusTripEditing" style="-fx-background-color: #F1F1F1;" />
                                        </children>
-                                       <VBox.margin>
-                                          <Insets left="20.0" top="5.0" />
-                                       </VBox.margin>
                                     </HBox>
-                                    <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="72.0" prefHeight="40.0" prefWidth="380.0">
-                                       <children>
-                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="normalText" text="Điểm đến: " />
-                                          <HBox alignment="CENTER_RIGHT" prefHeight="30.0" prefWidth="389.0">
-                                             <HBox.margin>
-                                                <Insets right="20.0" />
-                                             </HBox.margin>
-                                             <children>
-                                                <Text fx:id="txtEndLocation1" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="normalText" />
-                                             </children>
-                                          </HBox>
-                                       </children>
-                                       <padding>
-                                          <Insets left="20.0" />
-                                       </padding>
-                                       <VBox.margin>
-                                          <Insets top="5.0" />
-                                       </VBox.margin>
-                                    </HBox>
-                                    <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="118.0" prefHeight="40.0" prefWidth="380.0">
-                                       <children>
-                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="normalText" text="Giá tiền: " />
-                                          <HBox alignment="CENTER_RIGHT" prefHeight="30.0" prefWidth="389.0">
-                                             <children>
-                                                <Text fx:id="txtPrice1" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="normalText" />
-                                             </children>
-                                             <HBox.margin>
-                                                <Insets right="20.0" />
-                                             </HBox.margin>
-                                          </HBox>
-                                       </children>
-                                       <padding>
-                                          <Insets left="20.0" />
-                                       </padding>
-                                       <VBox.margin>
-                                          <Insets top="5.0" />
-                                       </VBox.margin>
-                                    </HBox>
-                                    <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="380.0">
-                                       <children>
-                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="normalText" text="Thời gian di chuyển: " />
-                                          <HBox alignment="CENTER_RIGHT" prefHeight="30.0" prefWidth="272.0">
-                                             <HBox.margin>
-                                                <Insets right="20.0" />
-                                             </HBox.margin>
-                                             <children>
-                                                <Text fx:id="txtTime1" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="normalText" />
-                                             </children>
-                                          </HBox>
-                                       </children>
-                                       <padding>
-                                          <Insets left="20.0" />
-                                       </padding>
-                                       <VBox.margin>
-                                          <Insets top="5.0" />
-                                       </VBox.margin>
-                                    </HBox>
+                                    <ComboBox fx:id="cbBusTripOfTicket" minHeight="35.0" onAction="#changeBusTrip" prefHeight="37.0" prefWidth="514.0" promptText="Chuyến" style="-fx-background-color: #f3eef4;" styleClass="comboBoxEditable" />
                                     <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="380.0">
                                        <children>
                                           <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20;" styleClass="titleText" text="Thông tin khách hàng" wrappingWidth="318.08056640625">
@@ -1339,32 +1274,15 @@
                                           <Insets top="5.0" />
                                        </VBox.margin>
                                     </HBox>
-                                    <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="518.0">
-                                       <children>
-                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="normalText" text="Số ghế: " />
-                                          <HBox alignment="CENTER_RIGHT" prefHeight="60.0" prefWidth="360.0">
-                                             <HBox.margin>
-                                                <Insets right="20.0" />
-                                             </HBox.margin>
-                                             <children>
-                                                <Text fx:id="txtTime11" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="normalText" />
-                                             </children>
-                                          </HBox>
-                                       </children>
-                                       <padding>
-                                          <Insets left="20.0" />
-                                       </padding>
-                                    </HBox>
                                     <HBox alignment="CENTER_LEFT" layoutX="30.0" layoutY="197.0" prefHeight="50.0" prefWidth="518.0">
                                        <children>
-                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="normalText" text="Họ tên khách hàng:" />
-                                          <HBox alignment="CENTER_RIGHT" prefHeight="30.0" prefWidth="272.0">
+                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="normalText" text="Họ tên khách hàng:" wrappingWidth="170.0" />
+                                          <HBox alignment="CENTER_LEFT" prefHeight="30.0" prefWidth="308.0">
                                              <HBox.margin>
                                                 <Insets right="20.0" />
                                              </HBox.margin>
                                              <children>
-                                                <TextField prefHeight="30.0" prefWidth="200.0" />
-                                                <Text fx:id="txtTime111" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="normalText" />
+                                                <TextField fx:id="CustomerNameOfTicket" prefHeight="30.0" prefWidth="300.0" />
                                              </children>
                                           </HBox>
                                        </children>
@@ -1374,14 +1292,13 @@
                                     </HBox>
                                     <HBox alignment="CENTER_LEFT" layoutX="30.0" layoutY="257.0" prefHeight="50.0" prefWidth="518.0">
                                        <children>
-                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="normalText" text="Số điện thoại: " />
-                                          <HBox alignment="CENTER_RIGHT" prefHeight="60.0" prefWidth="308.0">
+                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="normalText" text="Số điện thoại: " wrappingWidth="170.0" />
+                                          <HBox alignment="CENTER_LEFT" prefHeight="60.0" prefWidth="308.0">
                                              <HBox.margin>
-                                                <Insets right="20.0" />
+                                                <Insets />
                                              </HBox.margin>
                                              <children>
-                                                <TextField prefHeight="30.0" prefWidth="200.0" />
-                                                <Text fx:id="txtTime1111" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="normalText" />
+                                                <TextField fx:id="PhoneNameOfTicket" prefHeight="30.0" prefWidth="300.0" />
                                              </children>
                                           </HBox>
                                        </children>

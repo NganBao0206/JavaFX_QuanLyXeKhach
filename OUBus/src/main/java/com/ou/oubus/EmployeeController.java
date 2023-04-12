@@ -84,9 +84,14 @@ public class EmployeeController implements Initializable {
     private VBox vbCus;
     @FXML
     private TextField txtSearchCustomer;
+    @FXML
+    private AnchorPane tabViewTicket;
+    @FXML
+    private AnchorPane tabChangeTicket;
 
     private GridPane selectedTab;
     private final List<Button> btn = new ArrayList<>();
+    private final List<Button> btnEdit = new ArrayList<>();
 
     /**
      * Initializes the controller class.
@@ -103,6 +108,12 @@ public class EmployeeController implements Initializable {
             loadTableBusTripData(null, -1, -1);
             loadTableTicketData(null);
             getLocations();
+
+            LocationService ls = new LocationService();
+            List<Location> listloc = ls.getLocations(null);
+            listloc.add(null);
+            cbDeparture.setItems(FXCollections.observableList(listloc));
+            cbDestination.setItems(FXCollections.observableList(listloc));
             this.txtSearchCustomer.textProperty().addListener(e -> {
                 try {
                     loadTableTicketData(txtSearchCustomer.getText());
@@ -120,7 +131,9 @@ public class EmployeeController implements Initializable {
 
                 for (int i = 0; i < seats.size(); i++) {
                     Button b = (Button) App.getScene().lookup("#" + seats.get(i).getName());
+                    Button b2 = (Button) App.getScene().lookup("#seat" + seats.get(i).getName());
                     btn.add(b);
+                    btnEdit.add(b2);
                 }
                 selectedTab = tabBuyTicket;
 
@@ -138,6 +151,8 @@ public class EmployeeController implements Initializable {
         GridPane currentTab = (GridPane) App.getScene().lookup("#tab" + name);
         selectedTab = currentTab;
         selectedTab.setVisible(true);
+        tabChangeTicket.setVisible(false);
+        tabViewTicket.setVisible(true);
     }
 
     public void signOut(Event e) throws IOException {
@@ -189,7 +204,7 @@ public class EmployeeController implements Initializable {
 
     private void loadTableBusTripData(LocalDate departureDate, int departureId, int destinationId) throws SQLException {
         BusTripService bts = new BusTripService();
-        List<BusTrip> lbt = bts.getBusTrips(departureDate, departureId, destinationId);
+        List<BusTrip> lbt = bts.getBusTripsEmployee(departureDate, departureId, destinationId);
 
         this.tbBusTrip.getItems().clear();
         this.tbBusTrip.setItems(FXCollections.observableList(lbt));
@@ -330,10 +345,17 @@ public class EmployeeController implements Initializable {
     }
 
     public void confirmBuy(ActionEvent e) throws SQLException {
+        if (listSelectedSeat.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Bạn chưa chọn ghế nào", ButtonType.OK);
+            alert.showAndWait();
+            return;
+        }
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Xác nhận mua vé?");
         alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.YES) {
+            BusTrip bt = busTrip;
+            LocalDateTime departureTime = bt.getDepartureTime();
             List<TextField> nameCus = new ArrayList<>();
             List<TextField> phoneCus = new ArrayList<>();
             for (Button seat : listSelectedSeat) {
@@ -346,105 +368,122 @@ public class EmployeeController implements Initializable {
                 } else {
                     nameCus.add(tfName);
                     phoneCus.add(tfPhone);
-
                 }
             }
-            for (int i = 0; i < listSelectedSeat.size(); i++) {
-                Customer c = cs.getCustomer(nameCus.get(i).getText(), phoneCus.get(i).getText());
-                if (c != null) {
+            if (departureTime.isAfter(LocalDateTime.now().plusMinutes(5))) {
+                for (int i = 0; i < listSelectedSeat.size(); i++) {
+                    Customer c = cs.getCustomer(nameCus.get(i).getText(), phoneCus.get(i).getText());
+                    if (c != null) {
 
-                    Ticket t = new Ticket(c.getId(), busTrip.getId(), ss.getSeat(listSelectedSeat.get(i).getId()).getId(), currentUser.getUser().getId(), "purchased", busTrip.getPrice() + busTrip.getSurcharge());
-                    if (!ts.addTicket(t)) {
-                        Alert al = new Alert(Alert.AlertType.ERROR, "Đã có lỗi xảy ra, không thể thêm");
-                        al.show();
-                    } else {
-                        Alert al = new Alert(Alert.AlertType.INFORMATION, "Mua vé thành công");
-                        al.show();
-                        tabChooseBuy.setVisible(true);
-                        tabComfirmBuy.setVisible(false);
-                        loadTableTicketData(null);
-                    }
-
-                } else {
-                    c = new Customer(nameCus.get(i).getText(), phoneCus.get(i).getText());
-                    if (cs.addCustomer(c)) {
                         Ticket t = new Ticket(c.getId(), busTrip.getId(), ss.getSeat(listSelectedSeat.get(i).getId()).getId(), currentUser.getUser().getId(), "purchased", busTrip.getPrice() + busTrip.getSurcharge());
-
-                        if (!ts.addTicket(t)) {
-                            Alert al = new Alert(Alert.AlertType.ERROR, "Đã có lỗi xảy ra, không thể thêm");
-                            al.show();
-                        }
-                    }
-                }
-                Alert al = new Alert(Alert.AlertType.INFORMATION, "Mua vé thành công");
-                al.show();
-                tabChooseBuy.setVisible(true);
-                tabComfirmBuy.setVisible(false);
-                loadTableTicketData(null);
-            }
-            loadTableTicketData(txtSearchCustomer.getText());
-        }
-    }
-
-    public void confirmBook(ActionEvent e) throws SQLException {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Xác nhận đặt vé?");
-        alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.YES) {
-            List<TextField> nameCus = new ArrayList<>();
-            List<TextField> phoneCus = new ArrayList<>();
-            for (Button seat : listSelectedSeat) {
-                TextField tfName = (TextField) App.getScene().lookup("#name" + seat.getId());
-                TextField tfPhone = (TextField) App.getScene().lookup("#phone" + seat.getId());
-                if (tfName.getText().isBlank() || tfPhone.getText().isBlank()) {
-                    Alert al = new Alert(Alert.AlertType.WARNING, "Vui lòng điền đầy đủ thông tin khách hàng");
-                    al.showAndWait();
-                    return;
-                } else {
-                    nameCus.add(tfName);
-                    phoneCus.add(tfPhone);
-
-                }
-            }
-            for (int i = 0; i < listSelectedSeat.size(); i++) {
-                Customer c = cs.getCustomer(nameCus.get(i).getText(), phoneCus.get(i).getText());
-
-                if (c != null) {
-                    System.out.println(c.getName());
-                    Ticket t = new Ticket(c.getId(), busTrip.getId(), ss.getSeat(listSelectedSeat.get(i).getId()).getId(), currentUser.getUser().getId(), "booked", busTrip.getPrice() + busTrip.getSurcharge());
-                    if (!ts.addTicket(t)) {
-                        Alert al = new Alert(Alert.AlertType.ERROR, "Đã có lỗi xảy ra, không thể thêm");
-                        al.show();
-                    }
-                } else {
-                    c = new Customer(nameCus.get(i).getText(), phoneCus.get(i).getText());
-                    if (cs.addCustomer(c)) {
-                        Ticket t = new Ticket(c.getId(), busTrip.getId(), ss.getSeat(listSelectedSeat.get(i).getId()).getId(), currentUser.getUser().getId(), "booked", busTrip.getPrice() + busTrip.getSurcharge());
-                        System.out.println(currentUser.getUser().getId());
                         if (!ts.addTicket(t)) {
                             Alert al = new Alert(Alert.AlertType.ERROR, "Đã có lỗi xảy ra, không thể thêm");
                             al.show();
                         } else {
-                            Alert al = new Alert(Alert.AlertType.INFORMATION, "Đặt vé thành công");
+                            Alert al = new Alert(Alert.AlertType.INFORMATION, "Mua vé thành công");
                             al.show();
                             tabChooseBuy.setVisible(true);
                             tabComfirmBuy.setVisible(false);
                             loadTableTicketData(null);
                         }
+
+                    } else {
+                        c = new Customer(nameCus.get(i).getText(), phoneCus.get(i).getText());
+                        if (cs.addCustomer(c)) {
+                            Ticket t = new Ticket(c.getId(), busTrip.getId(), ss.getSeat(listSelectedSeat.get(i).getId()).getId(), currentUser.getUser().getId(), "purchased", busTrip.getPrice() + busTrip.getSurcharge());
+
+                            if (!ts.addTicket(t)) {
+                                Alert al = new Alert(Alert.AlertType.ERROR, "Đã có lỗi xảy ra, không thể thêm");
+                                al.show();
+                            }
+                        }
                     }
+                    Alert al = new Alert(Alert.AlertType.INFORMATION, "Mua vé thành công");
+                    al.show();
+                    tabChooseBuy.setVisible(true);
+                    tabComfirmBuy.setVisible(false);
+                    loadTableTicketData(null);
                 }
-                Alert al = new Alert(Alert.AlertType.INFORMATION, "Đặt vé thành công");
+                loadTableTicketData(txtSearchCustomer.getText());
+            } else {
+                Alert al = new Alert(Alert.AlertType.INFORMATION, "Còn 5 phút nữa là xe khởi hành, bạn không thể mua vé");
                 al.show();
-                tabChooseBuy.setVisible(true);
-                tabComfirmBuy.setVisible(false);
-                loadTableTicketData(null);
             }
-            loadTableTicketData(txtSearchCustomer.getText());
+
+        }
+
+    }
+
+    public void confirmBook(ActionEvent e) throws SQLException {
+        if (listSelectedSeat.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Bạn chưa chọn ghế nào", ButtonType.OK);
+            alert.showAndWait();
+            return;
+        }
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Xác nhận đặt vé?");
+        alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.YES) {
+            BusTrip bt = busTrip;
+            LocalDateTime departureTime = bt.getDepartureTime();
+            List<TextField> nameCus = new ArrayList<>();
+            List<TextField> phoneCus = new ArrayList<>();
+            for (Button seat : listSelectedSeat) {
+                TextField tfName = (TextField) App.getScene().lookup("#name" + seat.getId());
+                TextField tfPhone = (TextField) App.getScene().lookup("#phone" + seat.getId());
+                if (tfName.getText().isBlank() || tfPhone.getText().isBlank()) {
+                    Alert al = new Alert(Alert.AlertType.WARNING, "Vui lòng điền đầy đủ thông tin khách hàng");
+                    al.showAndWait();
+                    return;
+                } else {
+                    nameCus.add(tfName);
+                    phoneCus.add(tfPhone);
+
+                }
+            }
+            if (departureTime.isAfter(LocalDateTime.now().plusMinutes(60))) {
+                for (int i = 0; i < listSelectedSeat.size(); i++) {
+                    Customer c = cs.getCustomer(nameCus.get(i).getText(), phoneCus.get(i).getText());
+
+                    if (c != null) {
+                        System.out.println(c.getName());
+                        Ticket t = new Ticket(c.getId(), busTrip.getId(), ss.getSeat(listSelectedSeat.get(i).getId()).getId(), currentUser.getUser().getId(), "booked", busTrip.getPrice() + busTrip.getSurcharge());
+                        if (!ts.addTicket(t)) {
+                            Alert al = new Alert(Alert.AlertType.ERROR, "Đã có lỗi xảy ra, không thể thêm");
+                            al.show();
+                        }
+                    } else {
+                        c = new Customer(nameCus.get(i).getText(), phoneCus.get(i).getText());
+                        if (cs.addCustomer(c)) {
+                            Ticket t = new Ticket(c.getId(), busTrip.getId(), ss.getSeat(listSelectedSeat.get(i).getId()).getId(), currentUser.getUser().getId(), "booked", busTrip.getPrice() + busTrip.getSurcharge());
+                            System.out.println(currentUser.getUser().getId());
+                            if (!ts.addTicket(t)) {
+                                Alert al = new Alert(Alert.AlertType.ERROR, "Đã có lỗi xảy ra, không thể thêm");
+                                al.show();
+                            } else {
+                                Alert al = new Alert(Alert.AlertType.INFORMATION, "Đặt vé thành công");
+                                al.show();
+                                tabChooseBuy.setVisible(true);
+                                tabComfirmBuy.setVisible(false);
+                                loadTableTicketData(null);
+                            }
+                        }
+                    }
+                    Alert al = new Alert(Alert.AlertType.INFORMATION, "Đặt vé thành công");
+                    al.show();
+                    tabChooseBuy.setVisible(true);
+                    tabComfirmBuy.setVisible(false);
+                    loadTableTicketData(null);
+                }
+                loadTableTicketData(txtSearchCustomer.getText());
+            } else {
+                Alert al = new Alert(Alert.AlertType.INFORMATION, "Bạn không thể đặt xe trong 60 phút trước giờ khởi hành");
+                al.show();
+            }
         }
     }
 
     private void loadTableTicketColumns() {
-
         TableColumn col = new TableColumn("ID");
         col.setCellValueFactory(new PropertyValueFactory("id"));
         col.setPrefWidth(50);
@@ -485,7 +524,11 @@ public class EmployeeController implements Initializable {
         colPrice.setCellValueFactory(new PropertyValueFactory("TicketPrice"));
         colPrice.setPrefWidth(150);
 
-        this.tbTicket.getColumns().setAll(col, colCusName, colPhone, colSeatName, colStaffName, colStatus, colPrice, colDeparture, colDestination, colDepartureTime);
+        TableColumn Time = new TableColumn("Thời gian giao dịch");
+        Time.setCellValueFactory(new PropertyValueFactory("Time"));
+        Time.setPrefWidth(300);
+
+        this.tbTicket.getColumns().setAll(col, colCusName, colPhone, colSeatName, colStaffName, colStatus, colPrice, colDeparture, colDestination, colDepartureTime, Time);
     }
 
     private void loadTableTicketData(String keyword) throws SQLException {
@@ -549,14 +592,207 @@ public class EmployeeController implements Initializable {
                 if (selectedItem.getStatus().equals("purchased")) {
                     Alert al = new Alert(Alert.AlertType.INFORMATION, "Vé đã mua");
                     al.show();
-                    return;
+                } else if (selectedItem.getTime().plusMinutes(30).isAfter(LocalDateTime.now())) {
+                    ts.changeStatusToBuy(selectedItem);
+                    Alert al = new Alert(Alert.AlertType.INFORMATION, "Thành công");
+                    al.show();
+                    loadTableTicketData(txtSearchCustomer.getText());
+                } else {
+                    Alert al = new Alert(Alert.AlertType.INFORMATION, "Không thể đặt vé vì thời gian đặt quá 30 phút");
+                    al.show();
                 }
-                ts.changeStatusToBuy(selectedItem);
-                Alert al = new Alert(Alert.AlertType.INFORMATION, "Thành công");
-                al.show();
-                loadTableTicketData(txtSearchCustomer.getText());
+            }
+        }
+    }
+    @FXML
+    private TextField CustomerNameOfTicket;
+    @FXML
+    private TextField PhoneNameOfTicket;
+    @FXML
+    private ComboBox cbBusTripOfTicket;
+
+    @FXML
+    private Ticket ticketEditing;
+    @FXML
+    private ComboBox cbDeparture;
+    @FXML
+    private ComboBox cbDestination;
+    @FXML
+    private DatePicker dpDepartureDate;
+
+    public void loadBusTripEditing() throws SQLException {
+        Object item = cbDeparture.getSelectionModel().getSelectedItem();
+        Location l1 = item instanceof Location ? (Location) item : null;
+        int departureId = l1 != null ? l1.getId() : -1;
+
+        Object item2 = cbDestination.getSelectionModel().getSelectedItem();
+        Location l2 = item2 instanceof Location ? (Location) item2 : null;
+        int destinationId = l2 != null ? l2.getId() : -1;
+
+        loadComboBusTripData(dpDepartureDate.getValue(), departureId, destinationId);
+        for (int i = 0; i < cbBusTripOfTicket.getItems().size(); i++) {
+            Object item3 = cbBusTripOfTicket.getItems().get(i);
+            BusTrip bt = item3 instanceof BusTrip ? (BusTrip) item3 : null;
+            if (bt != null && bt.getId().equals(newBusTripId)) {
+                cbBusTripOfTicket.getSelectionModel().select(i);
+                break;
             }
         }
     }
 
+    public void editSeat() throws SQLException {
+        if (tbTicket.getSelectionModel().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Bạn chưa chọn vé nào", ButtonType.OK);
+            alert.showAndWait();
+            return;
+        }
+
+        ticketEditing = tbTicket.getSelectionModel().getSelectedItem() instanceof Ticket ? (Ticket) tbTicket.getSelectionModel().getSelectedItem() : null;
+        if (ticketEditing != null) {
+            CustomerNameOfTicket.setText(ticketEditing.getCusName());
+            PhoneNameOfTicket.setText(ticketEditing.getCusPhone());
+            newBusTripId = ticketEditing.getBusTripId();
+     
+            loadBusTripEditing();
+            for (Button b : btnEdit) {
+                b.getStyleClass().remove("selectedSeat");
+                b.setDisable(false);
+            }
+
+            List<Ticket> tickets = ts.getTicketsByBusTrip(ticketEditing.getBusTripId());
+            for (Ticket t : tickets) {
+                Seat s = ss.getSeat(t.getSeatId());
+                Button b = (Button) App.getScene().lookup("#seat" + s.getName());
+                b.setDisable(true);
+            }
+
+            Seat s = ss.getSeat(ticketEditing.getSeatId());
+            Button b = (Button) App.getScene().lookup("#seat" + s.getName());
+            b.setDisable(false);
+
+            b.getStyleClass().add("selectedSeat");
+            selectSeatEdit = b;
+
+        }
+        tabViewTicket.setVisible(false);
+        tabChangeTicket.setVisible(true);
+
+    }
+
+    private void loadComboBusTripData(LocalDate departureDate, int departureId, int destinationId) throws SQLException {
+        BusTripService bts = new BusTripService();
+        List<BusTrip> lbt = bts.getBusTripsEmployee(departureDate, departureId, destinationId);
+
+        cbBusTripOfTicket.getItems().clear();
+        cbBusTripOfTicket.setItems(FXCollections.observableList(lbt));
+    }
+
+    public void changeSeat(ActionEvent e) {
+        Button btnSeat = (Button) e.getSource();
+        if (selectSeatEdit != null)
+            selectSeatEdit.getStyleClass().remove("selectedSeat");
+        selectSeatEdit = btnSeat;
+        selectSeatEdit.getStyleClass().add("selectedSeat");
+
+    }
+
+    public void turnBack(ActionEvent e) {
+        tabViewTicket.setVisible(true);
+        tabChangeTicket.setVisible(false);
+    }
+
+    private String newBusTripId;
+    private Button selectSeatEdit = null;
+
+    public void changeBusTrip() throws SQLException {
+        Object selection = cbBusTripOfTicket.getSelectionModel().getSelectedItem();
+        BusTrip selectedBusTrip = selection instanceof BusTrip ? (BusTrip) selection : null;
+        if (selectedBusTrip != null && !selectedBusTrip.getId().equals(newBusTripId)) {
+            newBusTripId = selectedBusTrip.getId();
+            List<Ticket> tickets = ts.getTicketsByBusTrip(newBusTripId);
+            for (Button b : btnEdit) {
+                b.getStyleClass().remove("selectedSeat");
+                b.setDisable(false);
+            }
+
+            for (Ticket t : tickets) {
+                Seat s = ss.getSeat(t.getSeatId());
+                Button b = (Button) App.getScene().lookup("#seat" + s.getName());
+                b.setDisable(true);
+            }
+
+            if (selectedBusTrip.getId().equals(ticketEditing.getBusTripId())) {
+                Seat s = ss.getSeat(ticketEditing.getSeatId());
+                Button b = (Button) App.getScene().lookup("#seat" + s.getName());
+                b.setDisable(false);
+
+                b.getStyleClass().add("selectedSeat");
+                selectSeatEdit = b;
+            } else {
+                selectSeatEdit = null;
+            }
+        }
+    }
+
+    public void confirmEdit() throws SQLException {
+        if (selectSeatEdit == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Bạn chưa chọn ghế nào", ButtonType.OK);
+            alert.showAndWait();
+            return;
+        }
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Xác nhận đổi vé?");
+        alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.YES) {
+            BusTripService bts = new BusTripService();
+            BusTrip bt = bts.getBusTripById(newBusTripId);
+            LocalDateTime departureTime = bt.getDepartureTime();
+            if (CustomerNameOfTicket.getText().isBlank() || PhoneNameOfTicket.getText().isBlank()) {
+                Alert al = new Alert(Alert.AlertType.WARNING, "Vui lòng điền đầy đủ thông tin", ButtonType.OK);
+                al.showAndWait();
+                return;
+            }
+            if ("booked".equals(ticketEditing.getStatus()) && !departureTime.isAfter(LocalDateTime.now().plusMinutes(60))) {
+                Alert al = new Alert(Alert.AlertType.WARNING, "Bạn không thể đặt xe trong 60 phút trước giờ khởi hành", ButtonType.OK);
+                al.showAndWait();
+                return;
+            }
+            if ("purchased".equals(ticketEditing.getStatus()) && !departureTime.isAfter(LocalDateTime.now().plusMinutes(5))) {
+                Alert al = new Alert(Alert.AlertType.WARNING, "Bạn không thể mua vé trong 5 phút trước giờ khởi hành", ButtonType.OK);
+                al.showAndWait();
+                return;
+            }
+            Customer c = cs.getCustomer(CustomerNameOfTicket.getText(), PhoneNameOfTicket.getText());
+            if (c == null || !c.getId().equals(ticketEditing.getCustomerId())) {
+                int count = ts.getAmountTicketOfCustomer(ticketEditing.getCustomerId());
+                if (count == 0) {
+                    cs.deleteCustomer(ticketEditing.getCustomerId());
+                }
+            }
+            if (c == null) {
+                c = new Customer(CustomerNameOfTicket.getText(), PhoneNameOfTicket.getText());
+                if (!cs.addCustomer(c)) {
+                    Alert al = new Alert(Alert.AlertType.WARNING, "Đã có lỗi xảy ra", ButtonType.OK);
+                    al.showAndWait();
+                    return;
+                }
+            }
+            ticketEditing.setStaffId(CurrentUser.getInstance().getUser().getId());
+            ticketEditing.setSeatId(ss.getSeat(selectSeatEdit.getId().replaceAll("seat", "")).getId());
+            ticketEditing.setBusTripId(newBusTripId);
+            ticketEditing.setCustomerId(c.getId());
+            if (ts.editTicket(ticketEditing)) {
+                Alert al = new Alert(Alert.AlertType.INFORMATION, "Đổi thành công", ButtonType.OK);
+                al.showAndWait();
+                loadTableTicketData(txtSearchCustomer.getText());
+                tabViewTicket.setVisible(true);
+                tabChangeTicket.setVisible(false);
+            } else {
+                Alert al = new Alert(Alert.AlertType.WARNING, "Đã có lỗi xảy ra, có thể đã qua 30 phút kể từ lần đặt vé đầu tiên", ButtonType.OK);
+                al.showAndWait();
+            }
+
+        }
+
+    }
 }

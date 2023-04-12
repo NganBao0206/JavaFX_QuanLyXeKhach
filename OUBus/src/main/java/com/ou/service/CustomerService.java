@@ -77,5 +77,12 @@ public class CustomerService {
         }
     }
     
-    
+    public boolean deleteCustomer(String customerId) throws SQLException {
+        try (Connection conn = JdbcUtils.getConn()) {
+            String sql = "DELETE FROM customer WHERE id=?";
+            PreparedStatement stm = conn.prepareCall(sql);
+            stm.setString(1, customerId);
+            return stm.executeUpdate() > 0;
+        }
+    }
 }

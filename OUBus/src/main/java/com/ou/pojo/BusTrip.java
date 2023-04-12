@@ -5,6 +5,7 @@
 package com.ou.pojo;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 /**
@@ -235,5 +236,11 @@ public class BusTrip {
         this.destinationId = destinationId;
         this.departureName = departureName;
         this.destinationName = destinationName;
+    }
+    
+    @Override
+    public String toString() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        return "Chuyến " + this.departureName + " đến " + this.destinationName + " lúc " + this.departureTime.format(formatter) + " - giá " + (this.price + this.surcharge)*1000;
     }
 }

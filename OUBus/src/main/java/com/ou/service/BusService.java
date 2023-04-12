@@ -18,7 +18,7 @@ import java.util.List;
  * @author yuumm
  */
 public class BusService {
-     public List<Bus> getBuses() throws SQLException {
+    public List<Bus> getBuses() throws SQLException {
         
         List<Bus> buses = new ArrayList<>();
         try (Connection conn = JdbcUtils.getConn()) {

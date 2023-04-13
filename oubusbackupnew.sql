@@ -66,7 +66,7 @@ CREATE TABLE `bustrip` (
 
 LOCK TABLES `bustrip` WRITE;
 /*!40000 ALTER TABLE `bustrip` DISABLE KEYS */;
-INSERT INTO `bustrip` VALUES ('551688bf-6916-461a-a30b-332bdd13e019','4509ecc9-59d1-4c42-b0bb-de9252816090','2023-04-08 05:00:00',19,25.00);
+INSERT INTO `bustrip` VALUES ('551688bf-6916-461a-a30b-332bdd13e019','4509ecc9-59d1-4c42-b0bb-de9252816090','2023-04-08 05:00:00',19,25.00),('6685d656-877b-4644-a175-0fa64cf4d95b','6daf7025-39f3-4a5f-90c0-4061b0f90f35','2023-04-13 05:00:00',26,10.00),('7f96bdcb-717d-457b-afc3-54456f945278','ae97bacd-5536-4b26-bd67-51b82b08e9c0','2023-04-12 11:00:00',28,0.00),('88dc0f47-126e-4174-af37-ad0781d6c3f7','4509ecc9-59d1-4c42-b0bb-de9252816090','2023-04-11 23:00:00',22,10.00),('d4d6aae4-a6e5-4f0a-91da-ebb33f69e369','6daf7025-39f3-4a5f-90c0-4061b0f90f35','2023-04-29 05:00:00',22,0.00),('dedc8059-1af4-4c76-a32e-aa7d884c38a8','227fdaeb-425a-43dc-a2c8-35736a2edcf9','2023-04-11 16:22:00',21,1.00);
 /*!40000 ALTER TABLE `bustrip` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -91,7 +91,7 @@ CREATE TABLE `customer` (
 
 LOCK TABLES `customer` WRITE;
 /*!40000 ALTER TABLE `customer` DISABLE KEYS */;
-INSERT INTO `customer` VALUES ('14aa1b68-b209-4fa5-9e05-aeb57cd30c94','CVAKJ','134214'),('19035589-4218-4280-93e1-ec05e418060e','ưef','qửq'),('235f440e-324b-489f-af18-d0ab9f962412','ngân1','23'),('2e484214-4ee4-44b5-805b-7bfc4a1fa3ec','abc','123'),('6469936a-1510-4469-853c-8d1264ecde49','bsdfi','2342'),('76a95437-90af-4da0-b565-32b6cf3baa9a','dfg','123'),('87202f9a-792f-4053-b69b-cbb61598f216','Võ Phú Phát','123'),('a90eff49-88ed-41fd-87d5-056cf37db119','Ngà','12345'),('afa34f81-9a84-4a62-8caf-53c92bc04aa7','Nam','1230456'),('bf737c17-78c2-454d-9619-1b77eeaaf347','Ngân','123'),('c3e65801-19db-4c1e-b018-9b1bf59f7f23','qdq','eqwe'),('cff74f9b-3028-404a-bbb0-82a751634d82','NgAN','1234'),('eff2c379-a7d6-408d-8409-0136fc420c69','ƯEGWE','DỬQW'),('fb69a95e-5cea-43b5-afc0-b9b4d537f0e0','RQRW','QỬQWR');
+INSERT INTO `customer` VALUES ('21f396fb-bcb0-46d8-bc7f-e898921d7f47','Ngân','123'),('5404ee15-4d96-471d-9b7a-d3f8a90c3d11','Ngân Bảo','12345'),('aaf4cde9-2401-422f-9711-66579c9e5578','Võ Phú Phát','456');
 /*!40000 ALTER TABLE `customer` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -189,6 +189,7 @@ CREATE TABLE `ticket` (
   `StaffID` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `Status` enum('booked','purchased','empty') NOT NULL,
   `TicketPrice` decimal(15,2) NOT NULL,
+  `Time` datetime NOT NULL,
   PRIMARY KEY (`ID`),
   KEY `CustomerID` (`CustomerID`),
   KEY `BusTripID` (`BusTripID`),
@@ -207,6 +208,7 @@ CREATE TABLE `ticket` (
 
 LOCK TABLES `ticket` WRITE;
 /*!40000 ALTER TABLE `ticket` DISABLE KEYS */;
+INSERT INTO `ticket` VALUES ('6ef517f0-a4eb-47a4-9f60-b83a8920e822','5404ee15-4d96-471d-9b7a-d3f8a90c3d11','d4d6aae4-a6e5-4f0a-91da-ebb33f69e369',23,'9e6dfb03-d9d2-46c9-aeae-2b0236c2099c','purchased',150.00,'2023-04-12 15:36:46');
 /*!40000 ALTER TABLE `ticket` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -247,4 +249,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-04-11 14:12:37
+-- Dump completed on 2023-04-13 10:26:02

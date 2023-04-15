@@ -1,7 +1,7 @@
 package com.ou.oubus;
 
-import com.ou.service.AuthenticationResult;
-import com.ou.service.CurrentUser;
+import com.ou.utils.AuthenticationResult;
+import com.ou.utils.CurrentUser;
 import com.ou.service.UserService;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -40,8 +40,8 @@ public class Login {
             }
             else if ("staff".equals(result.getUserRole()))
             {
-                alert = new Alert(Alert.AlertType.INFORMATION, "Đăng nhập thành công bạn là " + result.getUserRole() + "  " + CurrentUser.getInstance().getUser().getName(), ButtonType.OK);
-                alert.show();
+                alert = new Alert(Alert.AlertType.INFORMATION, "Đăng nhập thành công", ButtonType.OK);
+                alert.showAndWait();
                 App.setRoot("employee");
             }
         }

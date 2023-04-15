@@ -4,8 +4,10 @@
  */
 package com.ou.pojo;
 
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -189,7 +191,8 @@ public class BusTrip {
     public BusTrip() {
     }
     
-    public BusTrip(String routeId, LocalDateTime departureTime, int busId, double surcharge) {
+    public BusTrip(String id, String routeId, LocalDateTime departureTime, int busId, double surcharge) {
+        this.id = id;
         this.routeId = routeId;
         this.departureTime = departureTime;
         this.busId = busId;
@@ -241,6 +244,7 @@ public class BusTrip {
     @Override
     public String toString() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-        return "Chuyến " + this.departureName + " đến " + this.destinationName + " lúc " + this.departureTime.format(formatter) + " - giá " + (this.price + this.surcharge)*1000;
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+        return "Chuyến " + this.departureName + " đến " + this.destinationName + " lúc " + this.departureTime.format(formatter) + " - giá " + currencyFormat.format((this.price + this.surcharge)*1000);
     }
 }

@@ -1,1 +1,6 @@
+com\ou\route\RouteTester.class
+com\ou\bus\BusTester.class
+com\ou\bustrip\BusTripTester.class
+com\ou\ticket\TicketTester.class
 com\ou\user\UserTester.class
+com\ou\location\LocationTester.class

@@ -10,7 +10,7 @@ import com.ou.pojo.Location;
 import com.ou.pojo.Seat;
 import com.ou.pojo.Ticket;
 import com.ou.service.BusTripService;
-import com.ou.service.CurrentUser;
+import com.ou.utils.CurrentUser;
 import com.ou.service.CustomerService;
 import com.ou.service.LocationService;
 import com.ou.service.SeatService;
@@ -121,6 +121,20 @@ public class EmployeeController implements Initializable {
                 }
             });
 
+            txtCusName.textProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue.matches("[\\p{L}\\s]*")) {
+                    txtCusName.setText(newValue.replaceAll("[^\\p{L}\\s]", ""));
+                }
+            });
+
+            txtCusPhone.textProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue.matches("^\\d{10}$")) {
+                    txtCusPhone.setText(newValue.replaceAll("[^0-9]", ""));
+                    if (txtCusPhone.getText().length() > 10)
+                        txtCusPhone.setText(txtCusPhone.getText().substring(0, 10));
+                }
+            });
+
         } catch (SQLException ex) {
             Logger.getLogger(EmployeeController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -155,6 +169,7 @@ public class EmployeeController implements Initializable {
     }
 
     public void signOut(Event e) throws IOException {
+        currentUser.setUser(null);
         App.setRoot("login");
     }
 
@@ -328,6 +343,11 @@ public class EmployeeController implements Initializable {
                     al.showAndWait();
                     return;
                 }
+                if (txtCusPhone.getText().length() < 10) {
+                    Alert al = new Alert(Alert.AlertType.ERROR, "Số điện thoại chưa đúng định dạng", ButtonType.OK);
+                    al.showAndWait();
+                    return;
+                }
                 Customer c = cs.getCustomer(txtCusName.getText(), txtCusPhone.getText());
                 if (c == null) {
                     c = new Customer(txtCusName.getText(), txtCusPhone.getText());
@@ -371,6 +391,11 @@ public class EmployeeController implements Initializable {
             if (departureTime.isAfter(LocalDateTime.now().plusMinutes(60))) {
                 if (txtCusName.getText().isBlank() || txtCusPhone.getText().isBlank()) {
                     Alert al = new Alert(Alert.AlertType.ERROR, "Vui lòng điền đầy đủ thông tin khách hàng", ButtonType.OK);
+                    al.showAndWait();
+                    return;
+                }
+                if (txtCusPhone.getText().length() < 10) {
+                    Alert al = new Alert(Alert.AlertType.ERROR, "Số điện thoại chưa đúng định dạng", ButtonType.OK);
                     al.showAndWait();
                     return;
                 }

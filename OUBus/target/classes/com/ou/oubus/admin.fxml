@@ -114,6 +114,21 @@
                   </HBox>
                </graphic>
             </Button>
+            <VBox prefHeight="92.0" prefWidth="198.0" />
+            <Button mnemonicParsing="false" onAction="#logOut" prefHeight="34.0" prefWidth="198.0" style="-fx-border-width: 0;" styleClass="menuItem" text="logOut">
+               <graphic>
+                  <HBox alignment="CENTER_LEFT" prefHeight="61.0" prefWidth="171.0" style="-fx-padding: 10 20 10 20; -fx-background-color: #fbf9fe; -fx-background-radius: 15;">
+                     <children>
+                        <BorderPane prefHeight="27.0" prefWidth="38.0">
+                           <center>
+                              <SVGPath content="M1.5 15a.5.5 0 0 0 0 1h13a.5.5 0 0 0 0-1H13V2.5A1.5 1.5 0 0 0 11.5 1H11V.5a.5.5 0 0 0-.57-.495l-7 1A.5.5 0 0 0 3 1.5V15H1.5zM11 2h.5a.5.5 0 0 1 .5.5V15h-1V2zm-2.5 8c-.276 0-.5-.448-.5-1s.224-1 .5-1 .5.448.5 1-.224 1-.5 1z" BorderPane.alignment="CENTER" />
+                           </center>
+                        </BorderPane>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="normalText" text="Đăng xuất" />
+                     </children>
+                  </HBox>
+               </graphic>
+            </Button>
          </children>
       </VBox>
    </left>
@@ -588,7 +603,7 @@
                                                       </Text>
                                                       <BorderPane prefHeight="54.0" prefWidth="200.0" styleClass="box-input3">
                                                          <center>
-                                                            <TextField fx:id="txtSurcharge" promptText="Giá phụ thu" BorderPane.alignment="CENTER">
+                                                            <TextField fx:id="txtSurcharge" promptText="Giá phụ thu" text="0" BorderPane.alignment="CENTER">
                                                                <styleClass>
                                                                   <String fx:value="input" />
                                                                   <String fx:value="normalText" />

@@ -14,7 +14,8 @@ import com.ou.service.BusTripService;
 import com.ou.service.LocationService;
 import com.ou.service.RouteService;
 import com.ou.service.UserService;
-import com.ou.service.ValidResult;
+import com.ou.utils.CurrentUser;
+import com.ou.utils.ValidResult;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
@@ -49,7 +50,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
@@ -59,7 +59,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
-import javafx.util.converter.NumberStringConverter;
 
 /**
  * FXML Controller class
@@ -134,8 +133,8 @@ public class AdminController implements Initializable {
     /**
      * Initializes the controller class.
      */
-    Spinner<Integer> hourSpinner = new Spinner<>(0, 23, 05);
-    Spinner<Integer> minuteSpinner = new Spinner<>(0, 59, 00);
+    Spinner<Integer> hourSpinner = new Spinner<>(0, 23, 05, 1);
+    Spinner<Integer> minuteSpinner = new Spinner<>(0, 59, 00, 1);
 
     private final RouteService rs = new RouteService();
     private final BusTripService bts = new BusTripService();
@@ -171,24 +170,58 @@ public class AdminController implements Initializable {
             hourSpinner.setId("departureHour");
             minuteSpinner.setPrefWidth(80);
 
+            hourSpinner.getEditor().setText(String.format("%02d", Integer.parseInt(hourSpinner.getEditor().getText())));
+            minuteSpinner.getEditor().setText(String.format("%02d", Integer.parseInt(minuteSpinner.getEditor().getText())));
+
             hourSpinner.valueProperty().addListener((observable, oldValue, newValue) -> {
                 if (newValue != null) {
                     try {
+                        if (newValue > 23) {
+                            hourSpinner.getEditor().setText("23");
+                        }
                         loadAvailableBus();
                     } catch (SQLException ex) {
                         Logger.getLogger(AdminController.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
+            });
 
+            hourSpinner.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue != null) {
+                    if (!newValue.matches("[0-9]*")) {
+                        hourSpinner.getEditor().setText(newValue.replaceAll("[^0-9]", ""));
+                    }
+                    if (newValue.length() > 3)
+                        hourSpinner.getEditor().setText(newValue.substring(0, 2));
+                    if (newValue.isBlank())
+                        hourSpinner.getEditor().setText("00");
+                    hourSpinner.getEditor().setText(String.format("%02d", Integer.parseInt(hourSpinner.getEditor().getText())));
+                }
             });
 
             minuteSpinner.valueProperty().addListener((observable, oldValue, newValue) -> {
                 if (newValue != null) {
                     try {
+                        if (newValue > 59) {
+                            minuteSpinner.getEditor().setText("59");
+                        }
                         loadAvailableBus();
                     } catch (SQLException ex) {
                         Logger.getLogger(AdminController.class.getName()).log(Level.SEVERE, null, ex);
                     }
+                }
+            });
+
+            minuteSpinner.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue != null) {
+                    if (!newValue.matches("[0-9]*")) {
+                        minuteSpinner.getEditor().setText(newValue.replaceAll("[^0-9]", ""));
+                    }
+                    if (newValue.length() > 3)
+                        minuteSpinner.getEditor().setText(newValue.substring(0, 2));
+                    if (newValue.isBlank())
+                        minuteSpinner.getEditor().setText("00");
+                    minuteSpinner.getEditor().setText(String.format("%02d", Integer.parseInt(minuteSpinner.getEditor().getText())));
                 }
             });
 
@@ -203,15 +236,42 @@ public class AdminController implements Initializable {
             loadListRoute();
             loadListBus();
 
-            txtSurcharge.setTextFormatter(new TextFormatter<>(new NumberStringConverter()));
-            txtSurchargeEdit.setTextFormatter(new TextFormatter<>(new NumberStringConverter()));
-            txtRoutePrice.setTextFormatter(new TextFormatter<>(new NumberStringConverter()));
+            txtSurcharge.textProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue.matches("[0-9]*")) {
+                    txtSurcharge.setText(newValue.replaceAll("[^0-9]", ""));
+                }
+            });
+            txtSurchargeEdit.textProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue.matches("[0-9]*")) {
+                    txtSurchargeEdit.setText(newValue.replaceAll("[^0-9]", ""));
+                }
+            });
+            txtRoutePrice.textProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue.matches("[0-9]*")) {
+                    txtRoutePrice.setText(newValue.replaceAll("[^0-9]", ""));
+                }
+            });
             txtRouteTime.textProperty().addListener((observable, oldValue, newValue) -> {
-                if (!newValue.matches("\\d*")) {
-                    txtRouteTime.setText(newValue.replaceAll("[^\\d]", ""));
+                if (!newValue.matches("[0-9]*")) {
+                    txtRouteTime.setText(newValue.replaceAll("[^0-9]", ""));
+                }
+            });
+            txtName.textProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue.matches("[\\p{L}\\s]*")) {
+                    txtName.setText(newValue.replaceAll("[^\\p{L}\\s]", ""));
                 }
             });
 
+            txtUsername.textProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue.matches("[a-zA-Z0-9.]*")) {
+                    txtUsername.setText(newValue.replaceAll("[^a-zA-Z0-9.]", ""));
+                }
+            });
+            txtNewLocation.textProperty().addListener((observable, oldValue, newValue) -> {
+                if (!newValue.matches("[\\p{L}\\s]*")) {
+                    txtNewLocation.setText(newValue.replaceAll("[^\\p{L}\\s]", ""));
+                }
+            });
             loadTableRouteColumns();
             loadTableRouteData();
             tbRoute.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
@@ -299,6 +359,9 @@ public class AdminController implements Initializable {
                                         editButtonCurrent = null;
                                         alert.show();
                                         loadListLocation();
+                                        loadTableRouteData();
+                                        loadListRoute();
+                                        filterBusTrip();
                                         break;
                                     }
                                     case 0: {
@@ -372,6 +435,10 @@ public class AdminController implements Initializable {
                     loadItemLocation(txtSearchLocation.getText());
                     txtNewLocation.setText("");
                     loadListLocation();
+                    loadTableRouteData();
+                    loadListRoute();
+                    filterBusTrip();
+                    editButtonCurrent = null;
                 }
             }
         }
@@ -683,22 +750,21 @@ public class AdminController implements Initializable {
                 if (bt != null) {
                     Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure to delete this question?");
                     alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
-                    alert.showAndWait().ifPresent(res -> {
-                        if (res == ButtonType.YES) {
-                            try {
-                                if (bts.deleteBusTrip(bt.getId()) == true) {
-                                    Alert al = new Alert(Alert.AlertType.INFORMATION, "Xóa thành công", ButtonType.OK);
-                                    al.show();
-                                    this.filterBusTrip();
-                                } else {
-                                    Alert al = new Alert(Alert.AlertType.INFORMATION, "Xóa thất bại", ButtonType.OK);
-                                    al.show();
-                                }
-                            } catch (SQLException ex) {
-                                Logger.getLogger(AdminController.class.getName()).log(Level.SEVERE, null, ex);
+                    Optional<ButtonType> result = alert.showAndWait();
+                    if (result.get() == ButtonType.YES) {
+                        try {
+                            if (bts.deleteBusTrip(bt.getId()) == true) {
+                                Alert al = new Alert(Alert.AlertType.INFORMATION, "Xóa thành công", ButtonType.OK);
+                                al.show();
+                                this.filterBusTrip();
+                            } else {
+                                Alert al = new Alert(Alert.AlertType.INFORMATION, "Xóa thất bại", ButtonType.OK);
+                                al.show();
                             }
+                        } catch (SQLException ex) {
+                            Logger.getLogger(AdminController.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                    });
+                    }
                 }
 
             });
@@ -744,8 +810,8 @@ public class AdminController implements Initializable {
                             cbEditRoute.getSelectionModel().select(index);
                             //Datetime
                             departureDateEdit.setValue(bt.getDepartureTime().toLocalDate());
-                            Spinner hourSpinnerEdit = new Spinner<>(0, 23, bt.getDepartureTime().getHour());
-                            Spinner minuteSpinnerEdit = new Spinner<>(0, 59, bt.getDepartureTime().getMinute());
+                            Spinner hourSpinnerEdit = new Spinner<>(0, 23, bt.getDepartureTime().getHour(), 1);
+                            Spinner minuteSpinnerEdit = new Spinner<>(0, 59, bt.getDepartureTime().getMinute(), 1);
                             hourSpinnerEdit.setEditable(true);
                             minuteSpinnerEdit.setEditable(true);
                             minuteSpinnerEdit.setId("departureMinuteEdit");
@@ -753,9 +819,16 @@ public class AdminController implements Initializable {
                             hourSpinnerEdit.setId("departureHourEdit");
                             minuteSpinnerEdit.setPrefWidth(80);
 
+                            hourSpinnerEdit.getEditor().setText(String.format("%02d", Integer.parseInt(hourSpinnerEdit.getEditor().getText())));
+                            minuteSpinnerEdit.getEditor().setText(String.format("%02d", Integer.parseInt(minuteSpinnerEdit.getEditor().getText())));
+
+
                             hourSpinnerEdit.valueProperty().addListener((observable, oldValue, newValue) -> {
                                 if (newValue != null) {
                                     try {
+                                        int value = (int) newValue;
+                                        if (value > 23)
+                                            hourSpinnerEdit.getEditor().setText("23");
                                         loadAvailableBusEdit();
                                     } catch (SQLException ex) {
                                         Logger.getLogger(AdminController.class.getName()).log(Level.SEVERE, null, ex);
@@ -763,13 +836,42 @@ public class AdminController implements Initializable {
                                 }
                             });
 
+                            hourSpinnerEdit.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
+                                if (newValue != null) {
+                                    if (!newValue.matches("[0-9]*")) {
+                                        hourSpinnerEdit.getEditor().setText(newValue.replaceAll("[^0-9]", ""));
+                                    }
+                                    if (newValue.length() > 3)
+                                        hourSpinnerEdit.getEditor().setText(newValue.substring(0, 2));
+                                    if (newValue.isBlank())
+                                        hourSpinnerEdit.getEditor().setText("00");
+                                    hourSpinnerEdit.getEditor().setText(String.format("%02d", Integer.parseInt(hourSpinnerEdit.getEditor().getText())));
+                                }
+                            });
+
                             minuteSpinnerEdit.valueProperty().addListener((observable, oldValue, newValue) -> {
                                 if (newValue != null) {
                                     try {
+                                        int value = (int) newValue;
+                                        if (value > 59)
+                                            minuteSpinnerEdit.getEditor().setText("59");
                                         loadAvailableBusEdit();
                                     } catch (SQLException ex) {
                                         Logger.getLogger(AdminController.class.getName()).log(Level.SEVERE, null, ex);
                                     }
+                                }
+                            });
+
+                            minuteSpinnerEdit.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
+                                if (newValue != null) {
+                                    if (!newValue.matches("[0-9]*")) {
+                                        minuteSpinnerEdit.getEditor().setText(newValue.replaceAll("[^0-9]", ""));
+                                    }
+                                    if (newValue.length() > 3)
+                                        minuteSpinnerEdit.getEditor().setText(newValue.substring(0, 2));
+                                    if (newValue.isBlank())
+                                        minuteSpinnerEdit.getEditor().setText("00");
+                                    minuteSpinnerEdit.getEditor().setText(String.format("%02d", Integer.parseInt(minuteSpinnerEdit.getEditor().getText())));
                                 }
                             });
 
@@ -975,11 +1077,13 @@ public class AdminController implements Initializable {
             }
 
             cbBusEdit.getSelectionModel().select(index);
+            loadAvailableBus();
         } else {
             alert.setContentText("Sửa không thành công");
             alert.show();
         }
         filterBusTrip();
+
     }
 
     public void loadAvailableBus() throws SQLException {
@@ -988,22 +1092,28 @@ public class AdminController implements Initializable {
             LocalDate dDate = departureDate.getValue();
             LocalDateTime dDateTime = LocalDateTime.of(dDate, LocalTime.of(hourSpinner.getValue(), minuteSpinner.getValue()));
             BusTrip testBusTrip = new BusTrip(r.getId(), dDateTime, -1, 0, r.getTotalTime());
-            List<Bus> listBus = bs.getBuses();
-            List<Bus> unavailable = new ArrayList<>();
-            for (Bus b : listBus) {
-                testBusTrip.setBusId(b.getId());
-                if (!bts.isValidBusTrip(testBusTrip) || bts.isValidBusTripWithBeforeTrip(testBusTrip).getResult() == -1 || bts.isValidBusTripWithAfterTrip(testBusTrip).getResult() == -1) {
-                    unavailable.add(b);
-                }
-            }
-            for (Bus removedBus : unavailable) {
-                listBus.remove(removedBus);
-            }
+            testBusTrip.setDepartureId(r.getDepartureId());
+            testBusTrip.setDestinationId(r.getDestinationId());
+            List<Bus> listBus = bs.getAvailableBuses(testBusTrip);
+            Bus oldSelect = null;
             combxBus.setDisable(false);
             if (combxBus.getItems() != null) {
+                if (combxBus.getSelectionModel().getSelectedItem() instanceof Bus) {
+                    oldSelect = (Bus) combxBus.getSelectionModel().getSelectedItem();
+                }
                 combxBus.getItems().clear();
             }
             combxBus.setItems(FXCollections.observableList(listBus));
+            if (oldSelect != null) {
+                for (int i = 0; i < combxBus.getItems().size(); i++) {
+                    Object o = combxBus.getItems().get(i);
+                    Bus temp = o instanceof Bus ? (Bus) o : null;
+                    if (temp != null && temp.getId() == oldSelect.getId()) {
+                        combxBus.getSelectionModel().select(i);
+                        break;
+                    }
+                }
+            }
         } else {
             combxBus.setDisable(true);
             combxBus.setItems(null);
@@ -1023,24 +1133,29 @@ public class AdminController implements Initializable {
             }
             LocalDateTime dDateTime = LocalDateTime.of(dDate, LocalTime.of((int) temp.get(0).getValue(), (int) temp.get(1).getValue()));
             BusTrip testBusTrip = new BusTrip(r.getId(), dDateTime, -1, 0, r.getTotalTime());
-            List<Bus> listBus = bs.getBuses();
-            List<Bus> unavailable = new ArrayList<>();
-            for (Bus b : listBus) {
-                testBusTrip.setBusId(b.getId());
-                if (BusId != b.getId()) {
-                    if (!bts.isValidBusTrip(testBusTrip) || bts.isValidBusTripWithBeforeTrip(testBusTrip).getResult() == -1 || bts.isValidBusTripWithAfterTrip(testBusTrip).getResult() == -1) {
-                        unavailable.add(b);
-                    }
-                }
-            }
-            for (Bus removedBus : unavailable) {
-                listBus.remove(removedBus);
-            }
+            testBusTrip.setDepartureId(r.getDepartureId());
+            testBusTrip.setDestinationId(r.getDestinationId());
+            testBusTrip.setId(txtIDBusTrip.getText());
+            List<Bus> listBus = bs.getAvailableBuses(testBusTrip);
+            Bus oldSelect = null;
             cbBusEdit.setDisable(false);
             if (cbBusEdit.getItems() != null) {
+                if (cbBusEdit.getSelectionModel().getSelectedItem() instanceof Bus) {
+                    oldSelect = (Bus) cbBusEdit.getSelectionModel().getSelectedItem();
+                }
                 cbBusEdit.getItems().clear();
             }
             cbBusEdit.setItems(FXCollections.observableList(listBus));
+            if (oldSelect != null) {
+                for (int i = 0; i < cbBusEdit.getItems().size(); i++) {
+                    Object o = cbBusEdit.getItems().get(i);
+                    Bus busTemp = o instanceof Bus ? (Bus) o : null;
+                    if (busTemp != null && busTemp.getId() == oldSelect.getId()) {
+                        cbBusEdit.getSelectionModel().select(i);
+                        break;
+                    }
+                }
+            }
         } else {
             cbBusEdit.setDisable(true);
             cbBusEdit.setItems(null);
@@ -1049,7 +1164,6 @@ public class AdminController implements Initializable {
 
     public void loadAvailableBusEdit() throws SQLException {
         if (cbEditRoute.getSelectionModel().getSelectedItem() != null && departureDateEdit.getValue() != null) {
-
             int BusId = bts.getBusTripById(txtIDBusTrip.getText()).getBusId();
             Route r = cbEditRoute.getSelectionModel().getSelectedItem() instanceof Route ? (Route) cbEditRoute.getSelectionModel().getSelectedItem() : null;
             LocalDate dDate = departureDateEdit.getValue();
@@ -1064,27 +1178,29 @@ public class AdminController implements Initializable {
             if (temp.size() > 1) {
                 LocalDateTime dDateTime = LocalDateTime.of(dDate, LocalTime.of((int) temp.get(0).getValue(), (int) temp.get(1).getValue()));
                 BusTrip testBusTrip = new BusTrip(r.getId(), dDateTime, -1, 0, r.getTotalTime());
-
-                List<Bus> listBus = bs.getBuses();
-                List<Bus> unavailable = new ArrayList<>();
-
-                for (Bus b : listBus) {
-                    testBusTrip.setBusId(b.getId());
-                    if (BusId != b.getId()) {
-
-                        if (!bts.isValidBusTrip(testBusTrip) || bts.isValidBusTripWithBeforeTrip(testBusTrip).getResult() == -1 || bts.isValidBusTripWithAfterTrip(testBusTrip).getResult() == -1) {
-                            unavailable.add(b);
-                        }
-                    }
-                }
-                for (Bus removedBus : unavailable) {
-                    listBus.remove(removedBus);
-                }
+                testBusTrip.setDepartureId(r.getDepartureId());
+                testBusTrip.setDestinationId(r.getDestinationId());
+                testBusTrip.setId(txtIDBusTrip.getText());
+                List<Bus> listBus = bs.getAvailableBuses(testBusTrip);
+                Bus oldSelect = null;
                 cbBusEdit.setDisable(false);
                 if (cbBusEdit.getItems() != null) {
+                    if (cbBusEdit.getSelectionModel().getSelectedItem() instanceof Bus) {
+                        oldSelect = (Bus) cbBusEdit.getSelectionModel().getSelectedItem();
+                    }
                     cbBusEdit.getItems().clear();
                 }
                 cbBusEdit.setItems(FXCollections.observableList(listBus));
+                if (oldSelect != null) {
+                    for (int i = 0; i < cbBusEdit.getItems().size(); i++) {
+                        Object o = cbBusEdit.getItems().get(i);
+                        Bus busTemp = o instanceof Bus ? (Bus) o : null;
+                        if (busTemp != null && busTemp.getId() == oldSelect.getId()) {
+                            cbBusEdit.getSelectionModel().select(i);
+                            break;
+                        }
+                    }
+                }
             }
 
         } else {
@@ -1181,12 +1297,14 @@ public class AdminController implements Initializable {
                     if (oldRoute == null) {
                         double price = Double.parseDouble(txtRoutePrice.getText().replaceAll(",", ""));
                         int minute = Integer.parseInt(txtRouteTime.getText());
-                        Route newRoute = new Route(l1.getId(), l2.getId(), price / 1000, minute);
+                        Route newRoute = new Route(l1.getId(), l2.getId(), (double) price / 1000, minute);
                         if (rs.addRoute(newRoute)) {
                             alert.setContentText("Thêm thành công");
                             alert.show();
                             loadTableRouteData();
                             loadListRoute();
+
+                            filterBusTrip();
 
                         } else {
                             alert.setContentText("Thêm không thành công");
@@ -1249,13 +1367,13 @@ public class AdminController implements Initializable {
                             if (oldRoute == null) {
                                 double price = Double.parseDouble(txtRoutePrice.getText().replaceAll(",", ""));
                                 int minute = Integer.parseInt(txtRouteTime.getText());
-                                Route editRoute = new Route(selectedRoute.getId(), l1.getId(), l2.getId(), price / 1000, minute);
+                                Route editRoute = new Route(selectedRoute.getId(), l1.getId(), l2.getId(), (double) price / 1000, minute);
                                 if (rs.editRoute(editRoute)) {
                                     alert.setContentText("Sửa thành công");
                                     alert.show();
                                     loadTableRouteData();
                                     loadListRoute();
-
+                                    filterBusTrip();
                                 } else {
                                     alert.setContentText("Sửa không thành công");
                                     alert.show();
@@ -1429,28 +1547,27 @@ public class AdminController implements Initializable {
                             confirm.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
                             Optional<ButtonType> result = confirm.showAndWait();
                             if (result.get() == ButtonType.YES) {
-                                User u = new User(selectedUser.getId(),txtUsername.getText(), txtPassword.getText(), txtName.getText(), "staff");
-                                if (u.getPassword().equals(selectedUser.getPassword()))
-                                {
+                                User u = new User(selectedUser.getId(), txtUsername.getText(), txtPassword.getText(), txtName.getText(), "staff");
+                                if (u.getPassword().equals(selectedUser.getPassword())) {
                                     if (us.editUserWithoutPass(u)) {
-                                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "Sửa thành công");
-                                    alert.show();
-                                    loadTableUserData();
+                                        Alert alert = new Alert(Alert.AlertType.INFORMATION, "Sửa thành công");
+                                        alert.show();
+                                        loadTableUserData();
                                     } else {
                                         Alert warning = new Alert(Alert.AlertType.WARNING, "Sửa không thành công");
                                         warning.show();
                                     }
                                 } else {
                                     if (us.editUser(u)) {
-                                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "Sửa thành công");
-                                    alert.show();
-                                    loadTableUserData();
+                                        Alert alert = new Alert(Alert.AlertType.INFORMATION, "Sửa thành công");
+                                        alert.show();
+                                        loadTableUserData();
                                     } else {
                                         Alert warning = new Alert(Alert.AlertType.WARNING, "Sửa không thành công");
                                         warning.show();
                                     }
                                 }
-                                
+
                             }
                         } else {
                             Alert warning = new Alert(Alert.AlertType.WARNING, "Mật khẩu và mật khẩu xác nhận không giống nhau");
@@ -1470,5 +1587,10 @@ public class AdminController implements Initializable {
             Alert warning = new Alert(Alert.AlertType.WARNING, "Vui lòng chọn user cần sửa");
             warning.show();
         }
+    }
+    
+    public void logOut() throws IOException {
+        CurrentUser.getInstance().setUser(null);
+        App.setRoot("login");
     }
 }

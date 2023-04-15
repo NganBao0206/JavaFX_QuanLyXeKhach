@@ -4,6 +4,8 @@
  */
 package com.ou.service;
 
+import com.ou.utils.CurrentUser;
+import com.ou.utils.AuthenticationResult;
 import com.ou.conf.JdbcUtils;
 import com.ou.pojo.User;
 import java.sql.Connection;
@@ -96,7 +98,6 @@ public class UserService {
             return new AuthenticationResult(false, "Wrong username", "");
         }
         if (BCrypt.checkpw(password, u.getPassword())) {
-            System.out.println(u.getId());
             CurrentUser currentUser = CurrentUser.getInstance();
             currentUser.setUser(u);
             

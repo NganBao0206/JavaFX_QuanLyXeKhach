@@ -39,12 +39,17 @@ public class ItemLocationController implements Initializable {
 
     /**
      * Initializes the controller class.
+     *
      * @param url
      * @param rb
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        txtName.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("[\\p{L}\\s]*")) {
+                txtName.setText(newValue.replaceAll("[^\\p{L}\\s]", ""));
+            }
+        });
     }
 
     public void setId(int id) {
@@ -109,23 +114,20 @@ public class ItemLocationController implements Initializable {
                 warning.setTitle("Không thể xóa");
                 warning.setHeaderText("Có tuyến xe sử dụng địa điểm này, không thể xóa!");
                 return false;
-            }
-            else {
+            } else {
                 LocationService ls = new LocationService();
                 if (ls.deleteLocation(Integer.parseInt(txtId.getText()))) {
                     Alert al = new Alert(AlertType.INFORMATION);
                     al.setHeaderText("Xóa thành công");
                     return true;
-                }
-                else {
+                } else {
                     Alert al = new Alert(AlertType.ERROR);
                     al.setHeaderText("Xóa không thành công");
                     return false;
                 }
-                    
+
             }
-        }
-        else {
+        } else {
             return false;
         }
     }

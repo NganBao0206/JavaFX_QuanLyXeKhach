@@ -25,21 +25,21 @@ import java.util.logging.Logger;
  */
 public class TicketService {
 
-    private final ScheduledExecutorService executor;
-
-    public TicketService() {
-        executor = Executors.newScheduledThreadPool(1);
-        executor.scheduleAtFixedRate(() -> {
-            try {
-                List<Ticket> invalidTickets = getInvalidTickets();
-                for (Ticket t : invalidTickets) {
-                    deleteTicket(t.getId());
-                }
-            } catch (SQLException ex) {
-                Logger.getLogger(TicketService.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }, 0, 1, TimeUnit.MINUTES);
-    }
+//    private final ScheduledExecutorService executor;
+//
+//    public TicketService() {
+//        executor = Executors.newScheduledThreadPool(1);
+//        executor.scheduleAtFixedRate(() -> {
+//            try {
+//                List<Ticket> invalidTickets = getInvalidTickets();
+//                for (Ticket t : invalidTickets) {
+//                    deleteTicket(t.getId());
+//                }
+//            } catch (SQLException ex) {
+//                Logger.getLogger(TicketService.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//        }, 0, 1, TimeUnit.MINUTES);
+//    }
 
     public boolean addTicket(Ticket t) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {

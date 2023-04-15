@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.0.31, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.32, for Win64 (x86_64)
 --
 -- Host: localhost    Database: oubus
 -- ------------------------------------------------------
--- Server version	8.0.31
+-- Server version	8.0.32
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -51,7 +51,7 @@ CREATE TABLE `bustrip` (
   `RouteID` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `DepartureTime` datetime NOT NULL,
   `BusID` int NOT NULL,
-  `Surcharge` decimal(15,2) NOT NULL,
+  `Surcharge` decimal(15,3) NOT NULL,
   PRIMARY KEY (`ID`),
   KEY `RouteID` (`RouteID`),
   KEY `BusID` (`BusID`),
@@ -66,7 +66,7 @@ CREATE TABLE `bustrip` (
 
 LOCK TABLES `bustrip` WRITE;
 /*!40000 ALTER TABLE `bustrip` DISABLE KEYS */;
-INSERT INTO `bustrip` VALUES ('551688bf-6916-461a-a30b-332bdd13e019','4509ecc9-59d1-4c42-b0bb-de9252816090','2023-04-08 05:00:00',19,25.00),('6685d656-877b-4644-a175-0fa64cf4d95b','6daf7025-39f3-4a5f-90c0-4061b0f90f35','2023-04-13 05:00:00',26,10.00),('7f96bdcb-717d-457b-afc3-54456f945278','ae97bacd-5536-4b26-bd67-51b82b08e9c0','2023-04-12 11:00:00',28,0.00),('88dc0f47-126e-4174-af37-ad0781d6c3f7','4509ecc9-59d1-4c42-b0bb-de9252816090','2023-04-11 23:00:00',22,10.00),('d4d6aae4-a6e5-4f0a-91da-ebb33f69e369','6daf7025-39f3-4a5f-90c0-4061b0f90f35','2023-04-29 05:00:00',22,0.00),('dedc8059-1af4-4c76-a32e-aa7d884c38a8','227fdaeb-425a-43dc-a2c8-35736a2edcf9','2023-04-11 16:22:00',21,1.00);
+INSERT INTO `bustrip` VALUES ('19d37b0f-1324-4a69-9038-cd4c6c5b898e','ae97bacd-5536-4b26-bd67-51b82b08e9c0','2023-04-23 05:00:00',20,0.000),('7a95f6cf-408d-46af-b57e-e112abb207ed','ae97bacd-5536-4b26-bd67-51b82b08e9c0','2023-04-23 23:02:00',20,0.000),('d4d6aae4-a6e5-4f0a-91da-ebb33f69e369','6daf7025-39f3-4a5f-90c0-4061b0f90f35','2023-04-29 06:00:00',22,0.000),('d4dcc0d6-8fbe-4227-907c-402e003dd4b9','a9a870b9-0d69-45fd-86fd-19534a49106e','2023-04-23 14:01:00',20,0.000);
 /*!40000 ALTER TABLE `bustrip` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -91,7 +91,7 @@ CREATE TABLE `customer` (
 
 LOCK TABLES `customer` WRITE;
 /*!40000 ALTER TABLE `customer` DISABLE KEYS */;
-INSERT INTO `customer` VALUES ('21f396fb-bcb0-46d8-bc7f-e898921d7f47','Ngân','123'),('5404ee15-4d96-471d-9b7a-d3f8a90c3d11','Ngân Bảo','12345'),('aaf4cde9-2401-422f-9711-66579c9e5578','Võ Phú Phát','456');
+INSERT INTO `customer` VALUES ('1c525928-68bd-42b0-b08c-fcf2ce813462','Ngân','1234567890'),('21f396fb-bcb0-46d8-bc7f-e898921d7f47','Ngân','123'),('42d85b94-fb98-45af-a352-c6b8a0a5147f','Phát','1233211321'),('5404ee15-4d96-471d-9b7a-d3f8a90c3d11','Ngân Bảo','12345'),('6e832c0c-4ff9-48fe-8f5e-12a430fabba3','Nguyễn Kim Bảo Ngân','123'),('aaf4cde9-2401-422f-9711-66579c9e5578','Võ Phú Phát','456');
 /*!40000 ALTER TABLE `customer` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -115,7 +115,7 @@ CREATE TABLE `location` (
 
 LOCK TABLES `location` WRITE;
 /*!40000 ALTER TABLE `location` DISABLE KEYS */;
-INSERT INTO `location` VALUES (1,'Thành phố Hồ Chí Minh'),(2,'Đà Nẵng'),(3,'Hà Nội'),(4,'Long An'),(5,'Cà Mau');
+INSERT INTO `location` VALUES (1,'Hồ Chí Minh'),(2,'Đà Nẵng'),(3,'Hà Nội'),(4,'Long An'),(5,'Cà Mau');
 /*!40000 ALTER TABLE `location` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -130,7 +130,7 @@ CREATE TABLE `route` (
   `ID` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `DepartureID` int NOT NULL,
   `DestinationID` int NOT NULL,
-  `Price` decimal(15,2) NOT NULL,
+  `Price` decimal(15,3) NOT NULL,
   `TotalTime` int NOT NULL,
   PRIMARY KEY (`ID`),
   KEY `DepartureID` (`DepartureID`),
@@ -146,7 +146,7 @@ CREATE TABLE `route` (
 
 LOCK TABLES `route` WRITE;
 /*!40000 ALTER TABLE `route` DISABLE KEYS */;
-INSERT INTO `route` VALUES ('0a7ebf40-0ee8-48a4-8b14-572068fe01b2',2,3,300.00,1200),('227fdaeb-425a-43dc-a2c8-35736a2edcf9',2,4,450.00,980),('4509ecc9-59d1-4c42-b0bb-de9252816090',1,2,500.00,1050),('4e27844f-4a13-4080-9ea8-5f38473b7c94',3,4,680.00,1900),('619780e1-61ce-4006-affc-82ed12b28956',4,5,350.00,600),('6daf7025-39f3-4a5f-90c0-4061b0f90f35',1,4,150.00,150),('7a58517f-34fb-4743-afe4-49e7b5cfeeda',2,5,750.00,2500),('7f7a9168-776c-425a-9112-806ec6318d9e',3,5,850.00,2800),('ae97bacd-5536-4b26-bd67-51b82b08e9c0',1,5,310.00,540),('e11c63d2-beec-488e-a78d-29c89ed1d52c',1,3,700.00,2100);
+INSERT INTO `route` VALUES ('0a7ebf40-0ee8-48a4-8b14-572068fe01b2',2,3,300.000,1200),('227fdaeb-425a-43dc-a2c8-35736a2edcf9',2,4,450.000,980),('4509ecc9-59d1-4c42-b0bb-de9252816090',1,2,500.000,1050),('4e27844f-4a13-4080-9ea8-5f38473b7c94',3,4,680.000,1900),('619780e1-61ce-4006-affc-82ed12b28956',4,5,350.000,600),('6daf7025-39f3-4a5f-90c0-4061b0f90f35',1,4,150.000,150),('7a58517f-34fb-4743-afe4-49e7b5cfeeda',2,5,750.000,2500),('7f7a9168-776c-425a-9112-806ec6318d9e',3,5,850.000,2800),('a9a870b9-0d69-45fd-86fd-19534a49106e',5,1,310.000,540),('ae97bacd-5536-4b26-bd67-51b82b08e9c0',1,5,310.000,540),('e11c63d2-beec-488e-a78d-29c89ed1d52c',1,3,700.000,2100);
 /*!40000 ALTER TABLE `route` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -188,7 +188,7 @@ CREATE TABLE `ticket` (
   `SeatID` int NOT NULL,
   `StaffID` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
   `Status` enum('booked','purchased','empty') NOT NULL,
-  `TicketPrice` decimal(15,2) NOT NULL,
+  `TicketPrice` decimal(15,3) NOT NULL,
   `Time` datetime NOT NULL,
   PRIMARY KEY (`ID`),
   KEY `CustomerID` (`CustomerID`),
@@ -208,7 +208,7 @@ CREATE TABLE `ticket` (
 
 LOCK TABLES `ticket` WRITE;
 /*!40000 ALTER TABLE `ticket` DISABLE KEYS */;
-INSERT INTO `ticket` VALUES ('6ef517f0-a4eb-47a4-9f60-b83a8920e822','5404ee15-4d96-471d-9b7a-d3f8a90c3d11','d4d6aae4-a6e5-4f0a-91da-ebb33f69e369',23,'9e6dfb03-d9d2-46c9-aeae-2b0236c2099c','purchased',150.00,'2023-04-12 15:36:46');
+INSERT INTO `ticket` VALUES ('1239a582-7a48-42f4-ace7-4442ef978350','6e832c0c-4ff9-48fe-8f5e-12a430fabba3','d4d6aae4-a6e5-4f0a-91da-ebb33f69e369',21,'9e6dfb03-d9d2-46c9-aeae-2b0236c2099c','purchased',150.000,'2023-04-15 08:45:43'),('5029b5ec-4887-4b1f-a52b-8aba4d5090b5','6e832c0c-4ff9-48fe-8f5e-12a430fabba3','d4d6aae4-a6e5-4f0a-91da-ebb33f69e369',13,'9e6dfb03-d9d2-46c9-aeae-2b0236c2099c','purchased',150.000,'2023-04-15 08:45:43'),('6ef517f0-a4eb-47a4-9f60-b83a8920e822','5404ee15-4d96-471d-9b7a-d3f8a90c3d11','d4d6aae4-a6e5-4f0a-91da-ebb33f69e369',23,'9e6dfb03-d9d2-46c9-aeae-2b0236c2099c','purchased',150.000,'2023-04-12 15:36:46'),('8b6ba9a2-9518-40ec-aae4-b0fcb4900d46','42d85b94-fb98-45af-a352-c6b8a0a5147f','d4d6aae4-a6e5-4f0a-91da-ebb33f69e369',31,'9e6dfb03-d9d2-46c9-aeae-2b0236c2099c','purchased',310.000,'2023-04-15 16:18:52'),('fb159109-9514-476e-987b-3ca77b815c6c','1c525928-68bd-42b0-b08c-fcf2ce813462','d4d6aae4-a6e5-4f0a-91da-ebb33f69e369',33,'9e6dfb03-d9d2-46c9-aeae-2b0236c2099c','purchased',150.000,'2023-04-15 14:54:05');
 /*!40000 ALTER TABLE `ticket` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -236,7 +236,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES ('0f77b858-3b2a-41d3-9921-d174f8600433','abc','$2a$10$7FknVd8C1A9r1HEiu/IZt.cXDpNHaqG0SxwYHFb70Rtas5paNbLzK','Vo Phu Phat','staff'),('6001e9b2-d5f5-477f-98f1-49fd1125e192','admin','$2a$10$mm.zF8smvQPy3U6BAOv7/etUebULnNGbtRltQS9vooa8OoM3cV4t.','abc','admin'),('9e6dfb03-d9d2-46c9-aeae-2b0236c2099c','phat','$2a$10$RDMxdSeUnVwvy.tZ/8361.SnplENj3znF5z7VJgJK/Av/s112Lygy','Võ Phú Phát','staff'),('b7dbc023-3957-45eb-a10b-d6835543a394','lalla','$2a$10$vwX6GDufVRdbNen/UgqA6..6yRIw/sn7vwZL7mSaUdiYlwqn/TRSi','BinBin','staff'),('c8ecad89-d275-46f4-b852-b416aa018e52','nganaa','$2a$10$7WjzhCRvWOBMUS7vw2t5m.RqEQuqTTDPbFXQTG2okCO17pTfrWww.','abce','staff');
+INSERT INTO `user` VALUES ('0f77b858-3b2a-41d3-9921-d174f8600433','abc','$2a$10$7FknVd8C1A9r1HEiu/IZt.cXDpNHaqG0SxwYHFb70Rtas5paNbLzK','Vo Phu Phat','staff'),('6001e9b2-d5f5-477f-98f1-49fd1125e192','admin','$2a$10$mm.zF8smvQPy3U6BAOv7/etUebULnNGbtRltQS9vooa8OoM3cV4t.','abc','admin'),('9e6dfb03-d9d2-46c9-aeae-2b0236c2099c','phat','$2a$10$RDMxdSeUnVwvy.tZ/8361.SnplENj3znF5z7VJgJK/Av/s112Lygy','Võ Phú Phát','staff'),('b7dbc023-3957-45eb-a10b-d6835543a394','staff2','$2a$10$vwX6GDufVRdbNen/UgqA6..6yRIw/sn7vwZL7mSaUdiYlwqn/TRSi','Nguyễn Văn A','staff'),('c8ecad89-d275-46f4-b852-b416aa018e52','ngan','$2a$10$7WjzhCRvWOBMUS7vw2t5m.RqEQuqTTDPbFXQTG2okCO17pTfrWww.','Nguyễn Kim Bảo Ngân','staff');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -249,4 +249,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-04-13 10:26:02
+-- Dump completed on 2023-04-15 17:22:00

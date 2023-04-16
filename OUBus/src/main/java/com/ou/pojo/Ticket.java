@@ -14,6 +14,20 @@ import java.util.UUID;
 public class Ticket {
 
     /**
+     * @return the busId
+     */
+    public int getBusId() {
+        return busId;
+    }
+
+    /**
+     * @param busId the busId to set
+     */
+    public void setBusId(int busId) {
+        this.busId = busId;
+    }
+
+    /**
      * @return the Time
      */
     public LocalDateTime getTime() {
@@ -279,6 +293,7 @@ public class Ticket {
     private String seatName;
     private String cusPhone;
     private String LicensePlates;
+    private int busId;
     private String DepartureName;
     private String DestinationName;
     private double price;

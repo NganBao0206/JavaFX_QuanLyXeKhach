@@ -3,6 +3,7 @@ com\ou\service\TicketService.class
 com\ou\oubus\Login.class
 com\ou\oubus\EmployeeController$1.class
 com\ou\conf\JdbcUtils.class
+com\ou\oubus\TicketExportController.class
 module-info.class
 com\ou\service\BusService.class
 com\ou\oubus\ItemLocationController.class
@@ -20,6 +21,7 @@ com\ou\oubus\AdminController.class
 com\ou\pojo\User.class
 com\ou\service\BusService$2.class
 com\ou\utils\ValidResult.class
+com\ou\oubus\TicketController.class
 com\ou\pojo\Location.class
 com\ou\service\UserService.class
 com\ou\service\BusTripService.class

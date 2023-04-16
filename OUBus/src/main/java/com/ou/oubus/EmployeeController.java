@@ -32,7 +32,9 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -130,8 +132,9 @@ public class EmployeeController implements Initializable {
             txtCusPhone.textProperty().addListener((observable, oldValue, newValue) -> {
                 if (!newValue.matches("^\\d{10}$")) {
                     txtCusPhone.setText(newValue.replaceAll("[^0-9]", ""));
-                    if (txtCusPhone.getText().length() > 10)
+                    if (txtCusPhone.getText().length() > 10) {
                         txtCusPhone.setText(txtCusPhone.getText().substring(0, 10));
+                    }
                 }
             });
 
@@ -325,12 +328,13 @@ public class EmployeeController implements Initializable {
         }
     }
 
-    public void confirmBuy(ActionEvent e) throws SQLException {
+    public void confirmBuy(ActionEvent e) throws SQLException, IOException {
         if (listSelectedSeat.isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.WARNING, "Bạn chưa chọn ghế nào", ButtonType.OK);
             alert.showAndWait();
             return;
         }
+        List<Ticket> tickets = new ArrayList<>();
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Xác nhận mua vé?");
         alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
         Optional<ButtonType> result = alert.showAndWait();
@@ -363,9 +367,20 @@ public class EmployeeController implements Initializable {
                         Alert al = new Alert(Alert.AlertType.ERROR, "Đã có lỗi xảy ra, không thể thêm");
                         al.show();
                     }
+                    tickets.add(ts.getTicket(t.getId()));
                 }
-                Alert al = new Alert(Alert.AlertType.INFORMATION, "Mua vé thành công");
-                al.showAndWait();
+                Alert al = new Alert(Alert.AlertType.CONFIRMATION, "Mua vé thành công, bạn có muốn xuất vé? ");
+                al.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+                Optional<ButtonType> rs = al.showAndWait();
+                if (rs.get() == ButtonType.YES) {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("exportTicket.fxml"));
+                    Parent root = loader.load();
+                    TicketExportController tec = loader.getController();
+                    tec.setTickets(tickets);
+                    tec.loadTickets();
+                    App.setRoot(root);
+
+                }
                 tabChooseBuy.setVisible(true);
                 tabComfirmBuy.setVisible(false);
                 loadTableTicketData(txtSearchCustomer.getText());
@@ -737,6 +752,30 @@ public class EmployeeController implements Initializable {
                 al.showAndWait();
             }
 
+        }
+
+    }
+
+    public void exportTicket(ActionEvent e) throws IOException {
+        if (tbTicket.getSelectionModel().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Bạn chưa chọn vé nào", ButtonType.OK);
+            alert.showAndWait();
+            return;
+        }
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("exportTicket.fxml"));
+        Parent root = loader.load();
+        TicketExportController c = loader.getController();
+        Object o = tbTicket.getSelectionModel().getSelectedItem();
+        Ticket t = o instanceof Ticket ? (Ticket) o : null;
+        List<Ticket> tickets = new ArrayList<>();
+        if (t != null) {
+            tickets.add(t);
+            c.setTickets(tickets);
+            c.loadTickets();
+            App.setRoot(root);
+        } else {
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Đã có lỗi xảy ra", ButtonType.OK);
+            alert.showAndWait();
         }
 
     }

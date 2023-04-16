@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.text.Text?>
+
+<HBox prefHeight="300.0" prefWidth="655.0" stylesheets="@../css/style.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ou.oubus.TicketController">
+   <children>
+      <VBox alignment="CENTER" prefHeight="300.0" prefWidth="248.0" style="-fx-background-color: #ac7ef1;">
+         <children>
+            <ImageView fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../images/logo2.png" />
+               </image>
+            </ImageView>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-fill: #fafafa;" styleClass="titleText" text="OUBUS" />
+         </children>
+      </VBox>
+      <VBox alignment="CENTER" prefHeight="300.0" prefWidth="556.0" style="-fx-background-color: white; -fx-border-style: dashed; -fx-border-color: #ac7ef1;" styleClass="borderDashed">
+         <children>
+            <VBox alignment="CENTER" prefHeight="410.0" prefWidth="507.0" style="-fx-spacing: 10;">
+               <VBox.margin>
+                  <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+               </VBox.margin>
+               <children>
+                  <HBox alignment="CENTER_LEFT" prefHeight="29.0" prefWidth="507.0">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="titleText" text="BUS TICKET" wrappingWidth="292.33331298828125" />
+                        <Text fx:id="txtBus" strokeType="OUTSIDE" strokeWidth="0.0" text="51B-3213D" textAlignment="RIGHT" wrappingWidth="151.42797088623047">
+                           <styleClass>
+                              <String fx:value="darkText" />
+                              <String fx:value="normalText" />
+                           </styleClass>
+                        </Text>
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="227.0" prefWidth="546.0">
+                     <children>
+                        <VBox prefHeight="227.0" prefWidth="351.0">
+                           <children>
+                              <VBox prefHeight="39.0" prefWidth="355.0">
+                                 <children>
+                                    <GridPane>
+                                      <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="93.888916015625" minWidth="10.0" prefWidth="35.0" />
+                                          <ColumnConstraints hgrow="SOMETIMES" maxWidth="181.8888339996338" minWidth="10.0" prefWidth="170.0" />
+                                          <ColumnConstraints hgrow="SOMETIMES" maxWidth="179.1110916137695" minWidth="10.0" prefWidth="35.0" />
+                                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="194.22222900390625" minWidth="10.0" prefWidth="170.0" />
+                                      </columnConstraints>
+                                      <rowConstraints>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                      </rowConstraints>
+                                       <children>
+                                          <StackPane prefHeight="150.0" prefWidth="200.0">
+                                             <children>
+                                                <SVGPath content="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z" style="-fx-scale-x: 1; -fx-scale-y: 1;" styleClass="purple" />
+                                             </children>
+                                          </StackPane>
+                                          <StackPane prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="1">
+                                             <children>
+                                                <Text fx:id="txtDeparture" strokeType="OUTSIDE" strokeWidth="0.0" text="HỒ CHÍ MINH">
+                                                   <styleClass>
+                                                      <String fx:value="myText" />
+                                                      <String fx:value="darkText" />
+                                                   </styleClass>
+                                                </Text>
+                                             </children>
+                                          </StackPane>
+                                          <StackPane prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="2">
+                                             <children>
+                                                <SVGPath content="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" style="-fx-scale-x: 1; -fx-scale-y: 1;" styleClass="purple" />
+                                             </children>
+                                          </StackPane>
+                                          <StackPane prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="3">
+                                             <children>
+                                                <Text fx:id="txtDestination" strokeType="OUTSIDE" strokeWidth="0.0" text="HÀ NỘI">
+                                                   <styleClass>
+                                                      <String fx:value="myText" />
+                                                      <String fx:value="darkText" />
+                                                   </styleClass>
+                                                </Text>
+                                             </children>
+                                          </StackPane>
+                                       </children>
+                                    </GridPane>
+                                 </children>
+                              </VBox>
+                              <HBox prefHeight="172.0" prefWidth="336.0">
+                                 <children>
+                                    <VBox alignment="CENTER_LEFT" prefHeight="65.0" prefWidth="178.0" style="-fx-spacing: 5;">
+                                       <children>
+                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" text="HÀNH KHÁCH:">
+                                             <styleClass>
+                                                <String fx:value="myText" />
+                                                <String fx:value="purpleText" />
+                                                <String fx:value="boldText" />
+                                             </styleClass>
+                                          </Text>
+                                          <Text layoutX="10.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" text="SĐT:">
+                                             <styleClass>
+                                                <String fx:value="myText" />
+                                                <String fx:value="purpleText" />
+                                                <String fx:value="boldText" />
+                                             </styleClass>
+                                          </Text>
+                                          <VBox prefHeight="20.0" prefWidth="100.0" />
+                                          <Text layoutX="10.0" layoutY="103.0" strokeType="OUTSIDE" strokeWidth="0.0" text="XE:">
+                                             <styleClass>
+                                                <String fx:value="myText" />
+                                                <String fx:value="purpleText" />
+                                                <String fx:value="boldText" />
+                                             </styleClass>
+                                          </Text>
+                                          <Text layoutX="10.0" layoutY="179.0" strokeType="OUTSIDE" strokeWidth="0.0" text="GHẾ:">
+                                             <styleClass>
+                                                <String fx:value="myText" />
+                                                <String fx:value="purpleText" />
+                                                <String fx:value="boldText" />
+                                             </styleClass>
+                                          </Text>
+                                          <Text layoutX="10.0" layoutY="180.0" strokeType="OUTSIDE" strokeWidth="0.0" text="NGÀY:">
+                                             <styleClass>
+                                                <String fx:value="myText" />
+                                                <String fx:value="purpleText" />
+                                                <String fx:value="boldText" />
+                                             </styleClass>
+                                          </Text>
+                                          <Text layoutX="10.0" layoutY="179.0" strokeType="OUTSIDE" strokeWidth="0.0" text="GIỜ:">
+                                             <styleClass>
+                                                <String fx:value="myText" />
+                                                <String fx:value="purpleText" />
+                                                <String fx:value="boldText" />
+                                             </styleClass>
+                                          </Text>
+                                          <Text layoutX="10.0" layoutY="179.0" strokeType="OUTSIDE" strokeWidth="0.0" text="GIÁ:">
+                                             <styleClass>
+                                                <String fx:value="myText" />
+                                                <String fx:value="purpleText" />
+                                                <String fx:value="boldText" />
+                                             </styleClass>
+                                          </Text>
+                                       </children>
+                                    </VBox>
+                                    <VBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" prefHeight="65.0" prefWidth="250.0" style="-fx-spacing: 5;">
+                                       <children>
+                                          <Text fx:id="txtCusName" strokeType="OUTSIDE" strokeWidth="0.0" text="NGUYỄN KIM BẢO NGÂN">
+                                             <styleClass>
+                                                <String fx:value="myText" />
+                                                <String fx:value="darkText" />
+                                             </styleClass>
+                                          </Text>
+                                          <Text fx:id="txtPhone" layoutX="10.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0903213124">
+                                             <styleClass>
+                                                <String fx:value="myText" />
+                                                <String fx:value="darkText" />
+                                             </styleClass>
+                                          </Text>
+                                          <VBox prefHeight="20.0" prefWidth="100.0" />
+                                          <Text fx:id="txtBusNum" layoutX="10.0" layoutY="104.0" strokeType="OUTSIDE" strokeWidth="0.0" text="19">
+                                             <styleClass>
+                                                <String fx:value="myText" />
+                                                <String fx:value="darkText" />
+                                             </styleClass>
+                                          </Text>
+                                          <Text fx:id="txtSeat" strokeType="OUTSIDE" strokeWidth="0.0" text="A02">
+                                             <styleClass>
+                                                <String fx:value="myText" />
+                                                <String fx:value="darkText" />
+                                             </styleClass>
+                                          </Text>
+                                          <Text fx:id="txtDate" strokeType="OUTSIDE" strokeWidth="0.0" text="23/04/2023">
+                                             <styleClass>
+                                                <String fx:value="myText" />
+                                                <String fx:value="darkText" />
+                                             </styleClass>
+                                          </Text>
+                                          <Text fx:id="txtTime" strokeType="OUTSIDE" strokeWidth="0.0" text="05:00">
+                                             <styleClass>
+                                                <String fx:value="myText" />
+                                                <String fx:value="darkText" />
+                                             </styleClass>
+                                          </Text>
+                                          <Text fx:id="txtPrice" layoutX="10.0" layoutY="179.0" strokeType="OUTSIDE" strokeWidth="0.0" text="200.000đ">
+                                             <styleClass>
+                                                <String fx:value="myText" />
+                                                <String fx:value="darkText" />
+                                             </styleClass>
+                                          </Text>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                           </children></VBox>
+                        <VBox alignment="TOP_CENTER" prefHeight="227.0" prefWidth="146.0">
+                           <children>
+                              <VBox alignment="CENTER" prefHeight="200.0" prefWidth="146.0">
+                                 <children>
+                                    <ImageView fx:id="imgQR" fitHeight="105.0" fitWidth="105.0" pickOnBounds="true" preserveRatio="true" />
+                                 </children>
+                              </VBox>
+                              <Text fx:id="txtCode" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 5;" styleClass="myText" text="1239a582-7a48-42f4-ace7-4442ef978350" textAlignment="CENTER" />
+                              <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" style="-fx-padding: 0 20 0 20;">
+                                 <children>
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text="NHÂN VIÊN">
+                                       <styleClass>
+                                          <String fx:value="myText" />
+                                          <String fx:value="purpleText" />
+                                          <String fx:value="boldText" />
+                                       </styleClass>
+                                    </Text>
+                                    <Text fx:id="txtStaff" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="myText" text="VÕ PHÚ PHÁT" />
+                                 </children>
+                              </VBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </children>
+      </VBox>
+   </children>
+</HBox>

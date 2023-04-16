@@ -26,6 +26,15 @@
     -fx-fill: #ac7ef1;
 }
 
+.grayText {
+    -fx-fill: #acacac;
+}
+
+.myText {
+    -fx-font-family: 'Montserrat', sans-serif;
+    -fx-font-size: 12;
+    -fx-font-weight: 500;
+}
 .size16 {
     -fx-font-size: 16;
 }
@@ -403,3 +412,6 @@ Hbox.listItem {
     -fx-fill: #acacac; 
 }
 
+.borderDashed{
+    -fx-border-width: 0 0 0 2;
+}

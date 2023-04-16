@@ -87,6 +87,46 @@ public class TicketService {
         return tickets;
     }
 
+    public Ticket getTicket(String id) throws SQLException
+    {
+        Ticket t = null;
+        try (Connection conn = JdbcUtils.getConn()) {
+            String sql = "SELECT * "
+                    + "FROM ticket t, seat s, customer c, user u ,bustrip bt, bus b, route r, location l1, location l2 "
+                    + "WHERE t.ID = ? AND t.StaffID = u.ID AND s.ID = t.SeatID "
+                    + "AND t.CustomerID = c.ID AND t.BusTripID = bt.ID "
+                    + "AND bt.BusID = b.ID AND bt.routeID = r.ID "
+                    + "AND r.DepartureID = l1.ID AND r.DestinationID = l2.ID ";
+            
+            PreparedStatement stm = conn.prepareCall(sql);
+            stm.setString(1, id);
+            ResultSet rs = stm.executeQuery();
+            if (rs.next()) {
+                String cusID = rs.getString("CustomerID");
+                String busTripID = rs.getNString("BusTripID");
+                int seatID = rs.getInt("SeatID");
+                String staffID = rs.getNString("StaffID");
+                String status = rs.getString("Status");
+                String staffName = rs.getString("u.Name");
+                String seatName = rs.getString("s.Name");
+                String cusName = rs.getString("c.Name");
+                String cusPhone = rs.getString("c.Phone");
+                String licensePlates = rs.getString("b.LicensePlates");
+                int busId = rs.getInt("b.ID");
+                String departureName = rs.getNString("l1.Name");
+                String destinationName = rs.getNString("l2.Name");
+                double ticketPrice = rs.getDouble("TicketPrice");
+                LocalDateTime departureTime = (LocalDateTime) rs.getObject("DepartureTime");
+                LocalDateTime time = (LocalDateTime) rs.getObject("Time");
+                t = new Ticket(id, cusID, busTripID, seatID, staffID, status, staffName, seatName, cusName, cusPhone, licensePlates, departureName, destinationName, ticketPrice, departureTime);
+                t.setTime(time);
+                t.setBusId(busId);
+            }
+        }
+        return t;
+
+    }
+    
     public List<Ticket> getTickets(String keyword) throws SQLException {
         List<Ticket> tickets = new ArrayList<>();
         try (Connection conn = JdbcUtils.getConn()) {
@@ -116,6 +156,7 @@ public class TicketService {
                 String cusName = rs.getString("c.Name");
                 String cusPhone = rs.getString("c.Phone");
                 String licensePlates = rs.getString("b.LicensePlates");
+                int busId = rs.getInt("b.ID");
                 String departureName = rs.getNString("l1.Name");
                 String destinationName = rs.getNString("l2.Name");
                 double ticketPrice = rs.getDouble("TicketPrice");
@@ -123,6 +164,7 @@ public class TicketService {
                 LocalDateTime time = (LocalDateTime) rs.getObject("Time");
                 Ticket t = new Ticket(id, cusID, busTripID, seatID, staffID, status, staffName, seatName, cusName, cusPhone, licensePlates, departureName, destinationName, ticketPrice, departureTime);
                 t.setTime(time);
+                t.setBusId(busId);
                 tickets.add(t);
             }
         }

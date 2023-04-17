@@ -44,7 +44,7 @@
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="titleText" text="OUBUS" />
                </children>
             </HBox>
-            <Button fx:id="btnHome" mnemonicParsing="false" onAction="#selectItem" prefHeight="34.0" prefWidth="198.0" text="home">
+            <Button fx:id="btnHome" mnemonicParsing="false" onAction="#selectHome" prefHeight="34.0" prefWidth="198.0" text="home">
                <graphic>
                   <HBox alignment="CENTER_LEFT" prefHeight="61.0" prefWidth="171.0">
                      <children>
@@ -62,7 +62,7 @@
                   <String fx:value="menuItem" />
                </styleClass>
             </Button>
-            <Button fx:id="btnStaff" layoutX="10.0" layoutY="186.0" mnemonicParsing="false" onAction="#selectItem" prefHeight="34.0" prefWidth="198.0" styleClass="menuItem" text="staff">
+            <Button fx:id="btnStaff" layoutX="10.0" layoutY="186.0" mnemonicParsing="false" onAction="#selectStaff" prefHeight="34.0" prefWidth="198.0" styleClass="menuItem" text="staff">
                <graphic>
                   <HBox alignment="CENTER_LEFT" prefHeight="61.0" prefWidth="171.0">
                      <children>
@@ -76,7 +76,7 @@
                   </HBox>
                </graphic>
             </Button>
-            <Button fx:id="btnLocation" layoutX="10.0" layoutY="383.0" mnemonicParsing="false" onAction="#selectItem" prefHeight="34.0" prefWidth="198.0" styleClass="menuItem" text="location">
+            <Button fx:id="btnLocation" layoutX="10.0" layoutY="383.0" mnemonicParsing="false" onAction="#selectLocation" prefHeight="34.0" prefWidth="198.0" styleClass="menuItem" text="location">
                <graphic>
                   <HBox alignment="CENTER_LEFT" prefHeight="61.0" prefWidth="171.0">
                      <children>
@@ -90,7 +90,7 @@
                   </HBox>
                </graphic>
             </Button>
-            <Button fx:id="btnRoute" layoutX="10.0" layoutY="317.0" mnemonicParsing="false" onAction="#selectItem" prefHeight="34.0" prefWidth="198.0" styleClass="menuItem" text="route">
+            <Button fx:id="btnRoute" layoutX="10.0" layoutY="317.0" mnemonicParsing="false" onAction="#selectRoute" prefHeight="34.0" prefWidth="198.0" styleClass="menuItem" text="route">
                <graphic>
                   <HBox alignment="CENTER_LEFT" prefHeight="61.0" prefWidth="171.0">
                      <children>
@@ -104,7 +104,7 @@
                   </HBox>
                </graphic>
             </Button>
-            <Button fx:id="btnBusTrip" layoutX="10.0" layoutY="120.0" mnemonicParsing="false" onAction="#selectItem" prefHeight="34.0" prefWidth="198.0" styleClass="menuItem" text="busTrip">
+            <Button fx:id="btnBusTrip" layoutX="10.0" layoutY="120.0" mnemonicParsing="false" onAction="#selectBusTrip" prefHeight="34.0" prefWidth="198.0" styleClass="menuItem" text="busTrip">
                <graphic>
                   <HBox alignment="CENTER_LEFT" prefHeight="61.0" prefWidth="171.0">
                      <children>

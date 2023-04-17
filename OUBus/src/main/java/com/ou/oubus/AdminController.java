@@ -416,16 +416,122 @@ public class AdminController implements Initializable {
         }
     }
 
-    public void selectItem(ActionEvent e) {
+//    public void selectItem(ActionEvent e) throws SQLException {
+//        selectedItem.getStyleClass().remove("menuSelectedItem");
+//        selectedTab.setVisible(false);
+//        Button btn = (Button) e.getTarget();
+//        selectedItem = btn;
+//        selectedItem.getStyleClass().add("menuSelectedItem");
+//        String id = btn.getId().replace("btn", "");
+//        GridPane tab = (GridPane) App.getScene().lookup("#tab" + id);
+//        switch (tab.getId()) {
+//            case "tabStaff":
+//            {
+//                txtUsername.setText("");
+//                txtPassword.setText("");
+//                txtConfirmPassword.setText("");
+//                txtName.setText("");
+//                loadTableUserData();
+//            }
+//            case "tabLocation" : {
+//                txtSearchLocation.setText("");
+//                txtNewLocation.setText("");
+//                loadItemLocation("");
+//            }
+//            case "tabRoute" : {
+//                cbRouteDeparture.getSelectionModel().select(null);
+//                cbRouteDestination.getSelectionModel().select(null);
+//                txtRoutePrice.setText("");
+//                txtRouteTime.setText("");
+//                loadTableRouteData();
+//            }
+//            case "tabBusTrip" : {
+//                filterDepartureDate.setValue(null);
+//                filterDeparture.setValue(null);
+//                filterDestination.setValue(null);
+//                loadTableBusTripData(null, -1, -1);
+//                tabAddBusTrip.setVisible(false);
+//                tabEditBusTrip.setVisible(false);
+//                tabViewBusTrip.setVisible(true);
+//            }
+//        }
+//        selectedTab = tab;
+//        selectedTab.setVisible(true);
+//    }
+
+    public void selectHome(ActionEvent e) {
         selectedItem.getStyleClass().remove("menuSelectedItem");
         selectedTab.setVisible(false);
         Button btn = (Button) e.getTarget();
         selectedItem = btn;
         selectedItem.getStyleClass().add("menuSelectedItem");
-        String id = btn.getId().replace("btn", "");
-        GridPane tab = (GridPane) App.getScene().lookup("#tab" + id);
+        GridPane tab = (GridPane) App.getScene().lookup("#tabHome");
         selectedTab = tab;
         selectedTab.setVisible(true);
+    }
+
+    public void selectStaff(ActionEvent e) throws SQLException {
+        selectedItem.getStyleClass().remove("menuSelectedItem");
+        selectedTab.setVisible(false);
+        Button btn = (Button) e.getTarget();
+        selectedItem = btn;
+        selectedItem.getStyleClass().add("menuSelectedItem");
+        GridPane tab = (GridPane) App.getScene().lookup("#tabStaff");
+        selectedTab = tab;
+        selectedTab.setVisible(true);
+        txtUsername.setText("");
+        txtPassword.setText("");
+        txtConfirmPassword.setText("");
+        txtName.setText("");
+        loadTableUserData();
+    }
+    
+    public void selectLocation(ActionEvent e) throws SQLException {
+        selectedItem.getStyleClass().remove("menuSelectedItem");
+        selectedTab.setVisible(false);
+        Button btn = (Button) e.getTarget();
+        selectedItem = btn;
+        selectedItem.getStyleClass().add("menuSelectedItem");
+        GridPane tab = (GridPane) App.getScene().lookup("#tabLocation");
+        selectedTab = tab;
+        selectedTab.setVisible(true);
+        txtSearchLocation.setText("");
+        txtNewLocation.setText("");
+        loadItemLocation("");
+    }
+    
+    public void selectRoute(ActionEvent e) throws SQLException {
+        selectedItem.getStyleClass().remove("menuSelectedItem");
+        selectedTab.setVisible(false);
+        Button btn = (Button) e.getTarget();
+        selectedItem = btn;
+        selectedItem.getStyleClass().add("menuSelectedItem");
+        GridPane tab = (GridPane) App.getScene().lookup("#tabRoute");
+        selectedTab = tab;
+        selectedTab.setVisible(true);
+        cbRouteDeparture.getSelectionModel().select(null);
+        cbRouteDestination.getSelectionModel().select(null);
+        txtRoutePrice.setText("");
+        txtRouteTime.setText("");
+        loadTableRouteData();
+    }
+    
+    public void selectBusTrip(ActionEvent e) throws SQLException {
+        selectedItem.getStyleClass().remove("menuSelectedItem");
+        selectedTab.setVisible(false);
+        Button btn = (Button) e.getTarget();
+        selectedItem = btn;
+        selectedItem.getStyleClass().add("menuSelectedItem");
+        GridPane tab = (GridPane) App.getScene().lookup("#tabBusTrip");
+        selectedTab = tab;
+        selectedTab.setVisible(true);
+        filterDepartureDate.setValue(null);
+        filterDeparture.setValue(null);
+        filterDestination.setValue(null);
+        loadTableBusTripData(null, -1, -1);
+        tabAddBusTrip.setVisible(false);
+        tabEditBusTrip.setVisible(false);
+        tabViewBusTrip.setVisible(true);
     }
 
     public void addItemLocation() throws SQLException {
@@ -951,7 +1057,7 @@ public class AdminController implements Initializable {
                                 cbBusEdit.getSelectionModel().select(index);
 
                                 // Surcharge
-                                String surcharge = bt.getSurcharge() != 0 ? String.valueOf((int)bt.getSurcharge() * 1000) : "0";
+                                String surcharge = bt.getSurcharge() != 0 ? String.valueOf((int) bt.getSurcharge() * 1000) : "0";
                                 txtSurchargeEdit.setText(surcharge);
 
                                 tabEditBusTrip.setVisible(true);
@@ -981,8 +1087,14 @@ public class AdminController implements Initializable {
     }
 
     public void switchToAddBusTrip() {
+        combxRoute.getSelectionModel().select(null);
+        departureDate.setValue(null);
+        combxBus.getSelectionModel().select(null);
+        combxBus.setDisable(true);
+        txtSurcharge.setText("0");
         tabAddBusTrip.setVisible(true);
         tabViewBusTrip.setVisible(false);
+        
     }
 
     public void backFromAddBusTrip() {
@@ -1418,7 +1530,7 @@ public class AdminController implements Initializable {
                 }
             }
 
-            txtRoutePrice.setText(String.valueOf((int)selectedRoute.getPrice() * 1000));
+            txtRoutePrice.setText(String.valueOf((int) selectedRoute.getPrice() * 1000));
             txtRouteTime.setText(String.valueOf(selectedRoute.getTotalTime()));
         }
     }

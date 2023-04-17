@@ -635,7 +635,7 @@ public class EmployeeController implements Initializable {
         }
         if (ticketEditing != null) {
             
-            if(!ticketEditing.getDepartureTime().plusMinutes(60).isBefore(LocalDateTime.now()))
+            if(!ticketEditing.getDepartureTime().isAfter(LocalDateTime.now().plusMinutes(60)))
             {
                 Alert al = new Alert(Alert.AlertType.WARNING, "Bạn không thể sửa vé đặt trong 60 phút trước giờ khởi hành", ButtonType.OK);
                 al.showAndWait();
@@ -737,7 +737,7 @@ public class EmployeeController implements Initializable {
         alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.YES) {
-            if(!ticketEditing.getDepartureTime().plusMinutes(60).isBefore(LocalDateTime.now()))
+            if(!ticketEditing.getDepartureTime().isAfter(LocalDateTime.now().plusMinutes(60)))
             {
                 Alert al = new Alert(Alert.AlertType.WARNING, "Bạn không thể sửa vé đặt trong 60 phút trước giờ khởi hành", ButtonType.OK);
                 al.showAndWait();
@@ -771,8 +771,7 @@ public class EmployeeController implements Initializable {
             ticketEditing.setStaffId(CurrentUser.getInstance().getUser().getId());
             ticketEditing.setSeatId(ss.getSeat(selectSeatEdit.getId().replaceAll("seat", "")).getId());
             ticketEditing.setBusTripId(newBusTripId);
-            System.out.println("Nhin o day " + departureTime.toString());
-            if (departureTime.isBefore(LocalDateTime.now().plusMinutes(60))) {
+            if (!departureTime.isAfter(LocalDateTime.now().plusMinutes(60))) {
                 Alert al = new Alert(Alert.AlertType.WARNING, "Bạn không thể sửa vé đặt trong 60 phút trước giờ khởi hành", ButtonType.OK);
                 al.showAndWait();
                 return;
@@ -784,6 +783,9 @@ public class EmployeeController implements Initializable {
                 loadTableTicketData(txtSearchCustomer.getText());
                 tabViewTicket.setVisible(true);
                 tabChangeTicket.setVisible(false);
+                cbDeparture.getSelectionModel().select(null);
+                cbDestination.getSelectionModel().select(null);
+                dpDepartureDate.setValue(null);
             } else {
                 Alert al = new Alert(Alert.AlertType.WARNING, "Đã có lỗi xảy ra, có thể đã qua 30 phút kể từ lần đặt vé đầu tiên", ButtonType.OK);
                 al.showAndWait();

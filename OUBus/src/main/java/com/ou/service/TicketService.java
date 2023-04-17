@@ -186,8 +186,10 @@ public class TicketService {
             ResultSet rs = stm.executeQuery();
             while (rs.next()) {
                 String id = rs.getString("ID");
+                String customerID = rs.getString("CustomerID");
                 Ticket t = new Ticket();
                 t.setId(id);
+                t.setCustomerId(customerID);
                 tickets.add(t);
             }
             return tickets;

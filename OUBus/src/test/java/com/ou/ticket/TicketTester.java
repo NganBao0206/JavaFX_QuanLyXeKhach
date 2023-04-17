@@ -7,6 +7,7 @@ package com.ou.ticket;
 import com.ou.conf.JdbcUtils;
 import com.ou.pojo.Ticket;
 import com.ou.service.TicketService;
+import com.ou.utils.StatisticalValue;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -229,6 +230,36 @@ public class TicketTester {
     
     @Test
     void testGetTicketsById(){
-        String id = "";
+        String id = "01656231-d575-4f17-a54f-ffeab3cf3010";
+    }
+    
+     @Test
+    void testGetMonthlyRevenue() throws SQLException { 
+        int year = 2023;
+        int month = 4;
+        List<StatisticalValue> result = ts.getMonthlyRevenue(year, month);
+        
+        //Kiểm tra kết quả trả về
+        Assertions.assertNotNull(result);
+        
+        //Kiểm tra số lượng
+        Assertions.assertEquals(3, result.size());
+        
+        //Kiểm tra một thành phần
+        StatisticalValue r = result.get(0);
+        Assertions.assertEquals("2023-04-16", r.getLabel());
+        Assertions.assertEquals(3700000.00, r.getValue());
+    }
+    
+    @Test
+    void testGetAvergePercentageSeat() throws SQLException {
+        int year = 2023;
+        int month = 4;
+        StatisticalValue result = ts.getAvergePercentageSeat(year, month);
+        
+        //Kiểm tra kết quả trả về
+        Assertions.assertNotNull(result);
+        
+        
     }
 }

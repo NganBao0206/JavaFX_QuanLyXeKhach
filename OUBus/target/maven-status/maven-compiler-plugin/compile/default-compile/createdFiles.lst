@@ -3,6 +3,7 @@ com\ou\service\TicketService.class
 com\ou\oubus\Login.class
 com\ou\oubus\TicketExportController.class
 com\ou\service\BusService$3.class
+com\ou\utils\StatisticalValue.class
 com\ou\pojo\Ticket.class
 com\ou\service\CustomerService.class
 com\ou\oubus\AdminController$2.class

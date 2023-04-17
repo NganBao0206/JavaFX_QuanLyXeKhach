@@ -4,7 +4,9 @@
  */
 package com.ou.utils;
 
+import com.ou.pojo.Customer;
 import com.ou.pojo.Ticket;
+import com.ou.service.CustomerService;
 import com.ou.service.TicketService;
 import java.sql.SQLException;
 import java.util.List;
@@ -24,6 +26,7 @@ public class Executor {
 
     private Executor() {
         TicketService ts = new TicketService();
+        CustomerService cs = new CustomerService();
         executor = Executors.newScheduledThreadPool(1);
         executor.scheduleAtFixedRate(() -> {
             try {
@@ -31,6 +34,9 @@ public class Executor {
                 System.out.println();
                 for (Ticket t : invalidTickets) {
                     ts.deleteTicket(t.getId());
+                    Customer c = cs.getCustomer(t.getCustomerId());
+                    if (c != null && ts.getAmountTicketOfCustomer(c.getId()) == 0)
+                        cs.deleteCustomer(c.getId());
                 }
             } catch (SQLException ex) {
                 Logger.getLogger(TicketService.class.getName()).log(Level.SEVERE, null, ex);

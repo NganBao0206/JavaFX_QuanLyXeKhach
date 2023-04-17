@@ -56,6 +56,22 @@ public class CustomerService {
         return null;
     }
     
+    public Customer getCustomer(String id) throws SQLException {
+
+        try (Connection conn = JdbcUtils.getConn()) {
+            String sql = "SELECT * FROM customer WHERE ID=?";
+            PreparedStatement stm = conn.prepareCall(sql);
+            stm.setString(1, id);
+            ResultSet rs = stm.executeQuery(); 
+            if (rs.next()) {
+                String n = rs.getNString("Name");
+                String p = rs.getNString("Phone");               
+                return new Customer(id, n, p);
+            }
+        }
+        return null;
+    }
+    
     public boolean addCustomer(Customer c) throws SQLException {
 
         try( Connection conn = JdbcUtils.getConn()) {

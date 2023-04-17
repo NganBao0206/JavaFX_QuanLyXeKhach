@@ -13,7 +13,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -226,5 +225,10 @@ public class TicketTester {
         // Kiem tra mot phan dai dien
         Ticket ticket = tickets.get(0);
         Assertions.assertEquals("557df3cb-2ad9-4d7c-a396-5fd0703d04c4", ticket.getId());
+    }
+    
+    @Test
+    void testGetTicketsById(){
+        String id = "";
     }
 }

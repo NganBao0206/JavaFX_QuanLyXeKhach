@@ -13,8 +13,10 @@ import com.ou.service.BusService;
 import com.ou.service.BusTripService;
 import com.ou.service.LocationService;
 import com.ou.service.RouteService;
+import com.ou.service.TicketService;
 import com.ou.service.UserService;
 import com.ou.utils.CurrentUser;
+import com.ou.utils.StatisticalValue;
 import com.ou.utils.ValidResult;
 import java.io.IOException;
 import java.net.URL;
@@ -39,6 +41,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.PieChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -191,10 +196,12 @@ public class AdminController implements Initializable {
                     if (!newValue.matches("[0-9]*")) {
                         hourSpinner.getEditor().setText(newValue.replaceAll("[^0-9]", ""));
                     }
-                    if (newValue.length() > 3)
+                    if (newValue.length() > 3) {
                         hourSpinner.getEditor().setText(newValue.substring(0, 2));
-                    if (newValue.isBlank())
+                    }
+                    if (newValue.isBlank()) {
                         hourSpinner.getEditor().setText("00");
+                    }
                     hourSpinner.getEditor().setText(String.format("%02d", Integer.parseInt(hourSpinner.getEditor().getText())));
                 }
             });
@@ -217,10 +224,12 @@ public class AdminController implements Initializable {
                     if (!newValue.matches("[0-9]*")) {
                         minuteSpinner.getEditor().setText(newValue.replaceAll("[^0-9]", ""));
                     }
-                    if (newValue.length() > 3)
+                    if (newValue.length() > 3) {
                         minuteSpinner.getEditor().setText(newValue.substring(0, 2));
-                    if (newValue.isBlank())
+                    }
+                    if (newValue.isBlank()) {
                         minuteSpinner.getEditor().setText("00");
+                    }
                     minuteSpinner.getEditor().setText(String.format("%02d", Integer.parseInt(minuteSpinner.getEditor().getText())));
                 }
             });
@@ -287,6 +296,7 @@ public class AdminController implements Initializable {
                     selectTableUser();
                 }
             });
+            loadChart();
 
         } catch (SQLException ex) {
             Logger.getLogger(AdminController.class.getName()).log(Level.SEVERE, null, ex);
@@ -423,12 +433,21 @@ public class AdminController implements Initializable {
             Alert alert = new Alert(Alert.AlertType.WARNING, "Vui lòng nhập tên địa điểm mới", ButtonType.OK);
             alert.show();
         } else {
+            Alert al = new Alert(Alert.AlertType.CONFIRMATION);
+            al.setTitle("Xác nhận thêm");
+            al.setHeaderText("Bạn có chắc chắn muốn thêm không?");
+
+            al.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+            Optional<ButtonType> r = al.showAndWait();
+            if (r.get() == ButtonType.NO) {
+                return;
+            }
             Location old = ls.getLocation(-1, txtNewLocation.getText());
             if (old != null) {
                 Alert alert = new Alert(Alert.AlertType.WARNING, "Đã tồn tại địa điểm " + txtNewLocation.getText(), ButtonType.OK);
                 alert.show();
             } else {
-                Location l = new Location(0, txtNewLocation.getText());
+                Location l = new Location(0, formatString(txtNewLocation.getText()));
                 if (ls.addLocation(l)) {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION, "Thêm thành công", ButtonType.OK);
                     alert.show();
@@ -541,8 +560,17 @@ public class AdminController implements Initializable {
     }
 
     public void addBusTrip() throws SQLException {
+        Alert al = new Alert(Alert.AlertType.CONFIRMATION);
+        al.setTitle("Xác nhận thêm");
+        al.setHeaderText("Bạn có chắc chắn muốn thêm không?");
+
+        al.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+        Optional<ButtonType> rs = al.showAndWait();
+        if (rs.get() == ButtonType.NO) {
+            return;
+        }
         Alert alert = new Alert(Alert.AlertType.ERROR, "Vui lòng điền đủ thông tin", ButtonType.OK);
-        Route route = null;
+        Route route;
         Object r = combxRoute.getSelectionModel().getSelectedItem();
         if (r != null && r instanceof Route) {
             route = (Route) combxRoute.getSelectionModel().getSelectedItem();
@@ -662,6 +690,7 @@ public class AdminController implements Initializable {
             }
             filterBusTrip();
             loadAvailableBus();
+            loadChart();
         }
     }
 
@@ -748,22 +777,32 @@ public class AdminController implements Initializable {
                 TableCell cell = (TableCell) b.getParent();
                 BusTrip bt = (BusTrip) cell.getTableRow().getItem();
                 if (bt != null) {
-                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure to delete this question?");
-                    alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
-                    Optional<ButtonType> result = alert.showAndWait();
-                    if (result.get() == ButtonType.YES) {
-                        try {
-                            if (bts.deleteBusTrip(bt.getId()) == true) {
-                                Alert al = new Alert(Alert.AlertType.INFORMATION, "Xóa thành công", ButtonType.OK);
-                                al.show();
-                                this.filterBusTrip();
-                            } else {
-                                Alert al = new Alert(Alert.AlertType.INFORMATION, "Xóa thất bại", ButtonType.OK);
-                                al.show();
-                            }
-                        } catch (SQLException ex) {
-                            Logger.getLogger(AdminController.class.getName()).log(Level.SEVERE, null, ex);
+                    try {
+                        if (!ts.getTicketsByBusTrip(bt.getId()).isEmpty()) {
+                            Alert alert = new Alert(Alert.AlertType.ERROR, "Chuyến xe đã được bán không thể xóa");
+                            alert.showAndWait();
+                            return;
                         }
+                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Bạn có chắc chắn muốn xóa chuyến xe này không?");
+                        alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+                        Optional<ButtonType> result = alert.showAndWait();
+                        if (result.get() == ButtonType.YES) {
+                            try {
+                                if (bts.deleteBusTrip(bt.getId()) == true) {
+                                    Alert al = new Alert(Alert.AlertType.INFORMATION, "Xóa thành công", ButtonType.OK);
+                                    al.show();
+                                    this.filterBusTrip();
+                                    loadChart();
+                                } else {
+                                    Alert al = new Alert(Alert.AlertType.INFORMATION, "Xóa thất bại", ButtonType.OK);
+                                    al.show();
+                                }
+                            } catch (SQLException ex) {
+                                Logger.getLogger(AdminController.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+                    } catch (SQLException ex) {
+                        Logger.getLogger(AdminController.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
 
@@ -788,126 +827,140 @@ public class AdminController implements Initializable {
                 TableCell cell = (TableCell) b.getParent();
                 BusTrip bt = (BusTrip) cell.getTableRow().getItem();
                 if (bt != null) {
-                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Bạn muốn chỉnh sửa chuyến đi này?");
-                    alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
-                    alert.showAndWait().ifPresent(res -> {
-                        if (res == ButtonType.YES) {
-                            //id
-                            txtIDBusTrip.setText(bt.getId());
-                            //Route
-                            int index = -1;
-                            for (int i = 0; i < cbEditRoute.getItems().size(); i++) {
-                                Route r = null;
-                                if (cbEditRoute.getItems().get(i) instanceof Route) {
-                                    r = (Route) cbEditRoute.getItems().get(i);
-                                }
-                                if (bt.getRouteId().equals(r.getId())) {
-                                    index = i;
-                                    break;
-                                }
-                            }
-
-                            cbEditRoute.getSelectionModel().select(index);
-                            //Datetime
-                            departureDateEdit.setValue(bt.getDepartureTime().toLocalDate());
-                            Spinner hourSpinnerEdit = new Spinner<>(0, 23, bt.getDepartureTime().getHour(), 1);
-                            Spinner minuteSpinnerEdit = new Spinner<>(0, 59, bt.getDepartureTime().getMinute(), 1);
-                            hourSpinnerEdit.setEditable(true);
-                            minuteSpinnerEdit.setEditable(true);
-                            minuteSpinnerEdit.setId("departureMinuteEdit");
-                            hourSpinnerEdit.setPrefWidth(80);
-                            hourSpinnerEdit.setId("departureHourEdit");
-                            minuteSpinnerEdit.setPrefWidth(80);
-
-                            hourSpinnerEdit.getEditor().setText(String.format("%02d", Integer.parseInt(hourSpinnerEdit.getEditor().getText())));
-                            minuteSpinnerEdit.getEditor().setText(String.format("%02d", Integer.parseInt(minuteSpinnerEdit.getEditor().getText())));
-
-
-                            hourSpinnerEdit.valueProperty().addListener((observable, oldValue, newValue) -> {
-                                if (newValue != null) {
-                                    try {
-                                        int value = (int) newValue;
-                                        if (value > 23)
-                                            hourSpinnerEdit.getEditor().setText("23");
-                                        loadAvailableBusEdit();
-                                    } catch (SQLException ex) {
-                                        Logger.getLogger(AdminController.class.getName()).log(Level.SEVERE, null, ex);
-                                    }
-                                }
-                            });
-
-                            hourSpinnerEdit.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
-                                if (newValue != null) {
-                                    if (!newValue.matches("[0-9]*")) {
-                                        hourSpinnerEdit.getEditor().setText(newValue.replaceAll("[^0-9]", ""));
-                                    }
-                                    if (newValue.length() > 3)
-                                        hourSpinnerEdit.getEditor().setText(newValue.substring(0, 2));
-                                    if (newValue.isBlank())
-                                        hourSpinnerEdit.getEditor().setText("00");
-                                    hourSpinnerEdit.getEditor().setText(String.format("%02d", Integer.parseInt(hourSpinnerEdit.getEditor().getText())));
-                                }
-                            });
-
-                            minuteSpinnerEdit.valueProperty().addListener((observable, oldValue, newValue) -> {
-                                if (newValue != null) {
-                                    try {
-                                        int value = (int) newValue;
-                                        if (value > 59)
-                                            minuteSpinnerEdit.getEditor().setText("59");
-                                        loadAvailableBusEdit();
-                                    } catch (SQLException ex) {
-                                        Logger.getLogger(AdminController.class.getName()).log(Level.SEVERE, null, ex);
-                                    }
-                                }
-                            });
-
-                            minuteSpinnerEdit.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
-                                if (newValue != null) {
-                                    if (!newValue.matches("[0-9]*")) {
-                                        minuteSpinnerEdit.getEditor().setText(newValue.replaceAll("[^0-9]", ""));
-                                    }
-                                    if (newValue.length() > 3)
-                                        minuteSpinnerEdit.getEditor().setText(newValue.substring(0, 2));
-                                    if (newValue.isBlank())
-                                        minuteSpinnerEdit.getEditor().setText("00");
-                                    minuteSpinnerEdit.getEditor().setText(String.format("%02d", Integer.parseInt(minuteSpinnerEdit.getEditor().getText())));
-                                }
-                            });
-
-                            Text temp2 = new Text(":");
-                            temp2.getStyleClass().addAll("normalText", "purpleText", "boldText");
-                            HBoxTimeEdit.getChildren().clear();
-                            HBoxTimeEdit.getChildren().add(hourSpinnerEdit);
-                            HBoxTimeEdit.getChildren().add(temp2);
-                            HBoxTimeEdit.getChildren().add(minuteSpinnerEdit);
-
-                            //Bus
-                            index = -1;
-                            int busId = bt.getBusId();
-                            try {
-                                loadAvailableBusEdit(busId);
-                            } catch (SQLException ex) {
-                                Logger.getLogger(AdminController.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-                            for (int i = 0; i < cbBusEdit.getItems().size(); i++) {
-
-                                Bus busOfTrip = cbBusEdit.getItems().get(i) instanceof Bus ? (Bus) cbBusEdit.getItems().get(i) : null;
-                                if (busId == busOfTrip.getId()) {
-                                    index = i;
-                                    break;
-                                }
-                            }
-                            cbBusEdit.getSelectionModel().select(index);
-
-                            // Surcharge
-                            String surcharge = bt.getSurcharge() != 0 ? String.valueOf(bt.getSurcharge() * 1000) : "0";
-                            txtSurchargeEdit.setText(surcharge);
-
-                            tabEditBusTrip.setVisible(true);
-                            tabViewBusTrip.setVisible(false);
+                    try {
+                        if (!ts.getTicketsByBusTrip(bt.getId()).isEmpty()) {
+                            Alert alert = new Alert(Alert.AlertType.ERROR, "Chuyến xe đã được bán không thể sửa");
+                            alert.showAndWait();
+                            return;
                         }
-                    });
+                        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Bạn muốn chỉnh sửa chuyến đi này?");
+                        alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+                        alert.showAndWait().ifPresent(res -> {
+                            if (res == ButtonType.YES) {
+                                //id
+                                txtIDBusTrip.setText(bt.getId());
+                                //Route
+                                int index = -1;
+                                for (int i = 0; i < cbEditRoute.getItems().size(); i++) {
+                                    Route r = null;
+                                    if (cbEditRoute.getItems().get(i) instanceof Route) {
+                                        r = (Route) cbEditRoute.getItems().get(i);
+                                    }
+                                    if (bt.getRouteId().equals(r.getId())) {
+                                        index = i;
+                                        break;
+                                    }
+                                }
+
+                                cbEditRoute.getSelectionModel().select(index);
+                                //Datetime
+                                departureDateEdit.setValue(bt.getDepartureTime().toLocalDate());
+                                Spinner hourSpinnerEdit = new Spinner<>(0, 23, bt.getDepartureTime().getHour(), 1);
+                                Spinner minuteSpinnerEdit = new Spinner<>(0, 59, bt.getDepartureTime().getMinute(), 1);
+                                hourSpinnerEdit.setEditable(true);
+                                minuteSpinnerEdit.setEditable(true);
+                                minuteSpinnerEdit.setId("departureMinuteEdit");
+                                hourSpinnerEdit.setPrefWidth(80);
+                                hourSpinnerEdit.setId("departureHourEdit");
+                                minuteSpinnerEdit.setPrefWidth(80);
+
+                                hourSpinnerEdit.getEditor().setText(String.format("%02d", Integer.parseInt(hourSpinnerEdit.getEditor().getText())));
+                                minuteSpinnerEdit.getEditor().setText(String.format("%02d", Integer.parseInt(minuteSpinnerEdit.getEditor().getText())));
+
+                                hourSpinnerEdit.valueProperty().addListener((observable, oldValue, newValue) -> {
+                                    if (newValue != null) {
+                                        try {
+                                            int value = (int) newValue;
+                                            if (value > 23) {
+                                                hourSpinnerEdit.getEditor().setText("23");
+                                            }
+                                            loadAvailableBusEdit();
+                                        } catch (SQLException ex) {
+                                            Logger.getLogger(AdminController.class.getName()).log(Level.SEVERE, null, ex);
+                                        }
+                                    }
+                                });
+
+                                hourSpinnerEdit.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
+                                    if (newValue != null) {
+                                        if (!newValue.matches("[0-9]*")) {
+                                            hourSpinnerEdit.getEditor().setText(newValue.replaceAll("[^0-9]", ""));
+                                        }
+                                        if (newValue.length() > 3) {
+                                            hourSpinnerEdit.getEditor().setText(newValue.substring(0, 2));
+                                        }
+                                        if (newValue.isBlank()) {
+                                            hourSpinnerEdit.getEditor().setText("00");
+                                        }
+                                        hourSpinnerEdit.getEditor().setText(String.format("%02d", Integer.parseInt(hourSpinnerEdit.getEditor().getText())));
+                                    }
+                                });
+
+                                minuteSpinnerEdit.valueProperty().addListener((observable, oldValue, newValue) -> {
+                                    if (newValue != null) {
+                                        try {
+                                            int value = (int) newValue;
+                                            if (value > 59) {
+                                                minuteSpinnerEdit.getEditor().setText("59");
+                                            }
+                                            loadAvailableBusEdit();
+                                        } catch (SQLException ex) {
+                                            Logger.getLogger(AdminController.class.getName()).log(Level.SEVERE, null, ex);
+                                        }
+                                    }
+                                });
+
+                                minuteSpinnerEdit.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
+                                    if (newValue != null) {
+                                        if (!newValue.matches("[0-9]*")) {
+                                            minuteSpinnerEdit.getEditor().setText(newValue.replaceAll("[^0-9]", ""));
+                                        }
+                                        if (newValue.length() > 3) {
+                                            minuteSpinnerEdit.getEditor().setText(newValue.substring(0, 2));
+                                        }
+                                        if (newValue.isBlank()) {
+                                            minuteSpinnerEdit.getEditor().setText("00");
+                                        }
+                                        minuteSpinnerEdit.getEditor().setText(String.format("%02d", Integer.parseInt(minuteSpinnerEdit.getEditor().getText())));
+                                    }
+                                });
+
+                                Text temp2 = new Text(":");
+                                temp2.getStyleClass().addAll("normalText", "purpleText", "boldText");
+                                HBoxTimeEdit.getChildren().clear();
+                                HBoxTimeEdit.getChildren().add(hourSpinnerEdit);
+                                HBoxTimeEdit.getChildren().add(temp2);
+                                HBoxTimeEdit.getChildren().add(minuteSpinnerEdit);
+
+                                //Bus
+                                index = -1;
+                                int busId = bt.getBusId();
+                                try {
+                                    loadAvailableBusEdit(busId);
+                                } catch (SQLException ex) {
+                                    Logger.getLogger(AdminController.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                                for (int i = 0; i < cbBusEdit.getItems().size(); i++) {
+
+                                    Bus busOfTrip = cbBusEdit.getItems().get(i) instanceof Bus ? (Bus) cbBusEdit.getItems().get(i) : null;
+                                    if (busId == busOfTrip.getId()) {
+                                        index = i;
+                                        break;
+                                    }
+                                }
+                                cbBusEdit.getSelectionModel().select(index);
+
+                                // Surcharge
+                                String surcharge = bt.getSurcharge() != 0 ? String.valueOf(bt.getSurcharge() * 1000) : "0";
+                                txtSurchargeEdit.setText(surcharge);
+
+                                tabEditBusTrip.setVisible(true);
+                                tabViewBusTrip.setVisible(false);
+                            }
+                        });
+                    } catch (SQLException ex) {
+                        Logger.getLogger(AdminController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
 
             });
@@ -943,6 +996,15 @@ public class AdminController implements Initializable {
     }
 
     public void editBusTrip() throws SQLException {
+        Alert al = new Alert(Alert.AlertType.CONFIRMATION);
+        al.setTitle("Xác nhận sửa");
+        al.setHeaderText("Bạn có chắc chắn muốn sửa không?");
+
+        al.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+        Optional<ButtonType> rs = al.showAndWait();
+        if (rs.get() == ButtonType.NO) {
+            return;
+        }
         Alert alert = new Alert(Alert.AlertType.ERROR, "Vui lòng điền đủ thông tin", ButtonType.OK);
         Route route;
         Object r = cbEditRoute.getSelectionModel().getSelectedItem();
@@ -1289,6 +1351,15 @@ public class AdminController implements Initializable {
     public void addRoute() throws SQLException {
         Alert alert = new Alert(Alert.AlertType.INFORMATION, "", ButtonType.OK);
         if (!cbRouteDeparture.getSelectionModel().isEmpty() && !cbRouteDestination.getSelectionModel().isEmpty() && !txtRoutePrice.getText().isBlank() && !txtRouteTime.getText().isBlank()) {
+            Alert al = new Alert(Alert.AlertType.CONFIRMATION);
+            al.setTitle("Xác nhận thêm");
+            al.setHeaderText("Bạn có chắc chắn muốn thêm không?");
+
+            al.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+            Optional<ButtonType> r = al.showAndWait();
+            if (r.get() == ButtonType.NO) {
+                return;
+            }
             Location l1 = cbRouteDeparture.getSelectionModel().getSelectedItem() instanceof Location ? (Location) cbRouteDeparture.getSelectionModel().getSelectedItem() : null;
             Location l2 = cbRouteDestination.getSelectionModel().getSelectedItem() instanceof Location ? (Location) cbRouteDestination.getSelectionModel().getSelectedItem() : null;
             if (l1 != null && l2 != null) {
@@ -1357,7 +1428,15 @@ public class AdminController implements Initializable {
         if (tbRoute.getSelectionModel().getSelectedItem() != null) {
             Route selectedRoute = tbRoute.getSelectionModel().getSelectedItem() instanceof Route ? (Route) tbRoute.getSelectionModel().getSelectedItem() : null;
             if (selectedRoute != null) {
+                Alert al = new Alert(Alert.AlertType.CONFIRMATION);
+                al.setTitle("Xác nhận sửa");
+                al.setHeaderText("Bạn có chắc chắn muốn sửa không?");
 
+                al.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+                Optional<ButtonType> r = al.showAndWait();
+                if (r.get() == ButtonType.NO) {
+                    return;
+                }
                 if (!cbRouteDeparture.getSelectionModel().isEmpty() && !cbRouteDestination.getSelectionModel().isEmpty() && !txtRoutePrice.getText().isBlank() && !txtRouteTime.getText().isBlank()) {
                     Location l1 = cbRouteDeparture.getSelectionModel().getSelectedItem() instanceof Location ? (Location) cbRouteDeparture.getSelectionModel().getSelectedItem() : null;
                     Location l2 = cbRouteDestination.getSelectionModel().getSelectedItem() instanceof Location ? (Location) cbRouteDestination.getSelectionModel().getSelectedItem() : null;
@@ -1411,7 +1490,7 @@ public class AdminController implements Initializable {
         if (tbRoute.getSelectionModel().getSelectedItem() != null) {
             Route selectedRoute = tbRoute.getSelectionModel().getSelectedItem() instanceof Route ? (Route) tbRoute.getSelectionModel().getSelectedItem() : null;
             if (selectedRoute != null) {
-                Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure to delete this question?");
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Bạn có chắc chắn muốn xóa tuyến xe này không?");
                 alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
                 alert.showAndWait().ifPresent(res -> {
                     {
@@ -1498,99 +1577,224 @@ public class AdminController implements Initializable {
         }
     }
 
-    public void addUser() throws SQLException {
-        if (txtUsername.getText().isBlank() || txtPassword.getText().isBlank() || txtConfirmPassword.getText().isBlank() || txtName.getText().isBlank()) {
-            Alert warning = new Alert(Alert.AlertType.WARNING, "Vui lòng nhập đầy đủ thông tin");
-            warning.show();
-        } else {
-            User check = us.getUserByUsername(txtUsername.getText());
-            if (check == null) {
-                if (txtPassword.getText().equals(txtConfirmPassword.getText())) {
-                    Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "Bạn có chắc chắn muốn thêm user này");
-                    confirm.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
-                    Optional<ButtonType> result = confirm.showAndWait();
-                    if (result.get() == ButtonType.YES) {
-                        User u = new User(txtUsername.getText(), txtPassword.getText(), txtConfirmPassword.getText(), "staff");
-                        if (us.addUser(u)) {
-                            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Thêm thành công");
-                            alert.show();
-                            loadTableUserData();
-                        } else {
-                            Alert warning = new Alert(Alert.AlertType.WARNING, "Thêm không thành công");
-                            warning.show();
-                        }
+    public void deleteUser() throws SQLException {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Xác nhận xóa");
+        alert.setHeaderText("Bạn có chắc chắn muốn xóa không?");
+
+        alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.YES) {
+            if (tbUser.getSelectionModel().getSelectedItem() != null) {
+                User selectedUser = tbUser.getSelectionModel().getSelectedItem() instanceof User ? (User) tbUser.getSelectionModel().getSelectedItem() : null;
+                if (selectedUser != null) {
+                    if (us.getAmountTicketByUserId(selectedUser.getId()) > 0) {
+                        Alert al = new Alert(Alert.AlertType.ERROR, "Nhân viên đã thực hiện các giao dịch đặt/bán vé, không thể xóa");
+                        al.showAndWait();
+                        return;
                     }
+                    if (us.deleteUser(selectedUser.getId())) {
+                        Alert al = new Alert(Alert.AlertType.INFORMATION, "Xóa thành công");
+                        al.showAndWait();
+                        loadTableUserData();
+                    }
+
                 } else {
-                    Alert warning = new Alert(Alert.AlertType.WARNING, "Mật khẩu và mật khẩu xác nhận không giống nhau");
+                    Alert warning = new Alert(Alert.AlertType.WARNING, "Vui lòng chọn user cần xóa");
                     warning.show();
                 }
-
             } else {
-                Alert warning = new Alert(Alert.AlertType.WARNING, "Username đã tồn tại không thể thêm");
+                Alert warning = new Alert(Alert.AlertType.WARNING, "Vui lòng chọn user cần xóa");
                 warning.show();
+            }
+        }
+    }
+
+    public void addUser() throws SQLException {
+        Alert al = new Alert(Alert.AlertType.CONFIRMATION);
+        al.setTitle("Xác nhận thêm");
+        al.setHeaderText("Bạn có chắc chắn muốn thêm không?");
+
+        al.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+        Optional<ButtonType> r = al.showAndWait();
+        if (r.get() == ButtonType.YES) {
+            if (txtUsername.getText().isBlank() || txtPassword.getText().isBlank() || txtConfirmPassword.getText().isBlank() || txtName.getText().isBlank()) {
+                Alert warning = new Alert(Alert.AlertType.WARNING, "Vui lòng nhập đầy đủ thông tin");
+                warning.show();
+            } else {
+                User check = us.getUserByUsername(txtUsername.getText());
+                if (check == null) {
+                    if (txtPassword.getText().equals(txtConfirmPassword.getText())) {
+                        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "Bạn có chắc chắn muốn thêm user này");
+                        confirm.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+                        Optional<ButtonType> result = confirm.showAndWait();
+                        if (result.get() == ButtonType.YES) {
+                            User u = new User(txtUsername.getText().toLowerCase(), txtPassword.getText(), formatString(txtName.getText()), "staff");
+                            if (us.addUser(u)) {
+                                Alert alert = new Alert(Alert.AlertType.INFORMATION, "Thêm thành công");
+                                alert.show();
+                                loadTableUserData();
+                            } else {
+                                Alert warning = new Alert(Alert.AlertType.WARNING, "Thêm không thành công");
+                                warning.show();
+                            }
+                        }
+                    } else {
+                        Alert warning = new Alert(Alert.AlertType.WARNING, "Mật khẩu và mật khẩu xác nhận không giống nhau");
+                        warning.show();
+                    }
+
+                } else {
+                    Alert warning = new Alert(Alert.AlertType.WARNING, "Username đã tồn tại không thể thêm");
+                    warning.show();
+                }
             }
         }
     }
 
     public void editUser() throws SQLException {
-        if (tbUser.getSelectionModel().getSelectedItem() != null) {
-            User selectedUser = tbUser.getSelectionModel().getSelectedItem() instanceof User ? (User) tbUser.getSelectionModel().getSelectedItem() : null;
-            if (selectedUser != null) {
-                if (txtUsername.getText().isBlank() || txtPassword.getText().isBlank() || txtConfirmPassword.getText().isBlank() || txtName.getText().isBlank()) {
-                    Alert warning = new Alert(Alert.AlertType.WARNING, "Vui lòng nhập đầy đủ thông tin");
-                    warning.show();
-                } else {
-                    User check = us.getUserByUsername(selectedUser.getId(), txtUsername.getText());
-                    if (check == null) {
-                        if (txtPassword.getText().equals(txtConfirmPassword.getText())) {
-                            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "Bạn có chắc chắn muốn sửa user này không?");
-                            confirm.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
-                            Optional<ButtonType> result = confirm.showAndWait();
-                            if (result.get() == ButtonType.YES) {
-                                User u = new User(selectedUser.getId(), txtUsername.getText(), txtPassword.getText(), txtName.getText(), "staff");
-                                if (u.getPassword().equals(selectedUser.getPassword())) {
-                                    if (us.editUserWithoutPass(u)) {
-                                        Alert alert = new Alert(Alert.AlertType.INFORMATION, "Sửa thành công");
-                                        alert.show();
-                                        loadTableUserData();
-                                    } else {
-                                        Alert warning = new Alert(Alert.AlertType.WARNING, "Sửa không thành công");
-                                        warning.show();
-                                    }
-                                } else {
-                                    if (us.editUser(u)) {
-                                        Alert alert = new Alert(Alert.AlertType.INFORMATION, "Sửa thành công");
-                                        alert.show();
-                                        loadTableUserData();
-                                    } else {
-                                        Alert warning = new Alert(Alert.AlertType.WARNING, "Sửa không thành công");
-                                        warning.show();
-                                    }
-                                }
+        Alert al = new Alert(Alert.AlertType.CONFIRMATION);
+        al.setTitle("Xác nhận sửa");
+        al.setHeaderText("Bạn có chắc chắn muốn sửa không?");
 
+        al.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+        Optional<ButtonType> r = al.showAndWait();
+        if (r.get() == ButtonType.YES) {
+            if (tbUser.getSelectionModel().getSelectedItem() != null) {
+                User selectedUser = tbUser.getSelectionModel().getSelectedItem() instanceof User ? (User) tbUser.getSelectionModel().getSelectedItem() : null;
+                if (selectedUser != null) {
+                    if (txtUsername.getText().isBlank() || txtPassword.getText().isBlank() || txtConfirmPassword.getText().isBlank() || txtName.getText().isBlank()) {
+                        Alert warning = new Alert(Alert.AlertType.WARNING, "Vui lòng nhập đầy đủ thông tin");
+                        warning.show();
+                    } else {
+                        User check = us.getUserByUsername(selectedUser.getId(), txtUsername.getText());
+                        if (check == null) {
+                            if (txtPassword.getText().equals(txtConfirmPassword.getText())) {
+                                Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "Bạn có chắc chắn muốn sửa user này không?");
+                                confirm.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+                                Optional<ButtonType> result = confirm.showAndWait();
+                                if (result.get() == ButtonType.YES) {
+                                    User u = new User(selectedUser.getId(), txtUsername.getText().toLowerCase(), txtPassword.getText(), formatString(txtName.getText()), "staff");
+                                    if (u.getPassword().equals(selectedUser.getPassword())) {
+                                        if (us.editUserWithoutPass(u)) {
+                                            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Sửa thành công");
+                                            alert.show();
+                                            loadTableUserData();
+                                        } else {
+                                            Alert warning = new Alert(Alert.AlertType.WARNING, "Sửa không thành công");
+                                            warning.show();
+                                        }
+                                    } else {
+                                        if (us.editUser(u)) {
+                                            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Sửa thành công");
+                                            alert.show();
+                                            loadTableUserData();
+                                        } else {
+                                            Alert warning = new Alert(Alert.AlertType.WARNING, "Sửa không thành công");
+                                            warning.show();
+                                        }
+                                    }
+
+                                }
+                            } else {
+                                Alert warning = new Alert(Alert.AlertType.WARNING, "Mật khẩu và mật khẩu xác nhận không giống nhau");
+                                warning.show();
                             }
+
                         } else {
-                            Alert warning = new Alert(Alert.AlertType.WARNING, "Mật khẩu và mật khẩu xác nhận không giống nhau");
+                            Alert warning = new Alert(Alert.AlertType.WARNING, "Username đã tồn tại");
                             warning.show();
                         }
-
-                    } else {
-                        Alert warning = new Alert(Alert.AlertType.WARNING, "Username đã tồn tại");
-                        warning.show();
                     }
+                } else {
+                    Alert warning = new Alert(Alert.AlertType.WARNING, "Vui lòng chọn user cần sửa");
+                    warning.show();
                 }
             } else {
                 Alert warning = new Alert(Alert.AlertType.WARNING, "Vui lòng chọn user cần sửa");
                 warning.show();
             }
-        } else {
-            Alert warning = new Alert(Alert.AlertType.WARNING, "Vui lòng chọn user cần sửa");
-            warning.show();
         }
     }
-    
+
     public void logOut() throws IOException {
-        CurrentUser.getInstance().setUser(null);
-        App.setRoot("login");
+        Alert al = new Alert(Alert.AlertType.CONFIRMATION);
+        al.setHeaderText("Bạn có chắc chắn muốn đăng xuất không?");
+        al.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+        Optional<ButtonType> r = al.showAndWait();
+        if (r.get() == ButtonType.YES) {
+            CurrentUser.getInstance().setUser(null);
+            App.setRoot("login");
+        }
+    }
+
+    @FXML
+    private LineChart chart1;
+    @FXML
+    private PieChart chart2;
+    @FXML
+    private Text txtTotal;
+    @FXML
+    private Text txtTotalSales;
+
+    private TicketService ts = new TicketService();
+
+    public void loadChart() throws SQLException {
+        int year = LocalDate.now().getYear();
+        int month = LocalDate.now().getMonthValue();
+        if (chart1 != null) {
+            chart1.getData().clear();
+            LocalDate date = LocalDate.now().withDayOfMonth(1);
+            LocalDate end = date.plusMonths(1);
+            XYChart.Series series = new XYChart.Series();
+            List<StatisticalValue> datas = ts.getMonthlyRevenue(year, month);
+
+            List<StatisticalValue> chartDatas = new ArrayList<>();
+            while (date.isBefore(end)) {
+                StatisticalValue temp = new StatisticalValue(date.toString(), 0);
+                for (StatisticalValue data : datas) {
+                    if (data.getLabel().equals(date.toString())) {
+                        temp.setValue(data.getValue());
+                    }
+                }
+                chartDatas.add(temp);
+                date = date.plusDays(1);
+            }
+
+            int i = 0;
+            series.setName("Doanh thu");
+            for (StatisticalValue data : chartDatas) {
+                series.getData().add(new XYChart.Data(data.getLabel().substring(data.getLabel().lastIndexOf("-") + 1), data.getValue()));
+            }
+            chart1.getData().add(series);
+            series.getNode().setStyle("-fx-stroke: #ac7ef1");
+        }
+
+        if (chart2 != null) {
+            chart2.getData().clear();
+            StatisticalValue soldSeat = ts.getAvergePercentageSeat(year, month);
+            PieChart.Data dataSold = new PieChart.Data(soldSeat.getLabel(), soldSeat.getValue());
+            PieChart.Data dataEmpty = new PieChart.Data("Tỷ lệ ghế trống", 100 - soldSeat.getValue());
+            chart2.getData().addAll(dataEmpty, dataSold);
+        }
+
+        List<Number> totals = ts.getTotalTicket(year, month);
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+        txtTotalSales.setText(currencyFormat.format(totals.get(0)));
+        txtTotal.setText(totals.get(1).toString());
+    }
+
+    public String formatString(String input) {
+        input = input.toLowerCase();
+        String[] words = input.split("\\s+"); // Split into words
+        StringBuilder result = new StringBuilder();
+        for (String word : words) {
+            if (word.length() > 1) {
+                result.append(word.substring(0, 1).toUpperCase()).append(word.substring(1).toLowerCase()).append(" ");
+            } else {
+                result.append(word.toUpperCase()).append(" ");
+            }
+        }
+        return result.toString().trim(); // Remove trailing whitespace
     }
 }

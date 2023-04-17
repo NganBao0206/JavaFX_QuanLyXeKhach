@@ -74,9 +74,9 @@ public class ItemLocationController implements Initializable {
             Optional<ButtonType> result = alert.showAndWait();
             if (result.get() == ButtonType.YES) {
                 LocationService ls = new LocationService();
-                Location check = ls.getLocation(Integer.parseInt(txtId.getText()), txtName.getText());
+                Location check = ls.getLocation(Integer.parseInt(txtId.getText()), formatString(txtName.getText()));
                 if (check == null) {
-                    Location lct = new Location(Integer.parseInt(txtId.getText()), txtName.getText());
+                    Location lct = new Location(Integer.parseInt(txtId.getText()), formatString(txtName.getText()));
                     btnEdit.getStyleClass().remove("isPressed");
                     txtName.setEditable(false);
                     if (ls.editLocation(lct)) {
@@ -86,7 +86,7 @@ public class ItemLocationController implements Initializable {
                     }
                 } else {
                     Alert warning = new Alert(AlertType.ERROR);
-                    warning.setHeaderText("Đã tồn tại địa điểm " + txtName.getText());
+                    warning.setHeaderText("Đã tồn tại địa điểm " + formatString(txtName.getText()));
                     warning.show();
                     return -1;
                 }
@@ -113,16 +113,19 @@ public class ItemLocationController implements Initializable {
                 Alert warning = new Alert(AlertType.ERROR);
                 warning.setTitle("Không thể xóa");
                 warning.setHeaderText("Có tuyến xe sử dụng địa điểm này, không thể xóa!");
+                warning.showAndWait();
                 return false;
             } else {
                 LocationService ls = new LocationService();
                 if (ls.deleteLocation(Integer.parseInt(txtId.getText()))) {
                     Alert al = new Alert(AlertType.INFORMATION);
                     al.setHeaderText("Xóa thành công");
+                    al.showAndWait();
                     return true;
                 } else {
                     Alert al = new Alert(AlertType.ERROR);
                     al.setHeaderText("Xóa không thành công");
+                    al.showAndWait();
                     return false;
                 }
 
@@ -130,6 +133,20 @@ public class ItemLocationController implements Initializable {
         } else {
             return false;
         }
+    }
+    
+    public String formatString(String input) {
+        input = input.toLowerCase();
+        String[] words = input.split("\\s+"); // Split into words
+        StringBuilder result = new StringBuilder();
+        for (String word : words) {
+            if (word.length() > 1) {
+                result.append(word.substring(0, 1).toUpperCase()).append(word.substring(1).toLowerCase()).append(" ");
+            } else {
+                result.append(word.toUpperCase()).append(" ");
+            }
+        }
+        return result.toString().trim(); // Remove trailing whitespace
     }
 
 }

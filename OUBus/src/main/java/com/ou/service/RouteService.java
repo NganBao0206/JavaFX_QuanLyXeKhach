@@ -5,7 +5,6 @@
 package com.ou.service;
 
 import com.ou.conf.JdbcUtils;
-import com.ou.pojo.Location;
 import com.ou.pojo.Route;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

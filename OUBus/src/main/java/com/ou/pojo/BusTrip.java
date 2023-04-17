@@ -17,6 +17,20 @@ import java.util.UUID;
 public class BusTrip {
 
     /**
+     * @return the emptySeats
+     */
+    public int getEmptySeats() {
+        return emptySeats;
+    }
+
+    /**
+     * @param emptySeats the emptySeats to set
+     */
+    public void setEmptySeats(int emptySeats) {
+        this.emptySeats = emptySeats;
+    }
+
+    /**
      * @return the departureId
      */
     public int getDepartureId() {
@@ -184,6 +198,7 @@ public class BusTrip {
     private int departureId;
     private int destinationId;
     private double price;
+    private int emptySeats;
     {
         id = UUID.randomUUID().toString();
     }

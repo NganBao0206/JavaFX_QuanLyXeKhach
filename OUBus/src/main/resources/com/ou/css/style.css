@@ -26,6 +26,15 @@
     -fx-fill: #ac7ef1;
 }
 
+.grayText {
+    -fx-fill: #acacac;
+}
+
+.myText {
+    -fx-font-family: 'Montserrat', sans-serif;
+    -fx-font-size: 12;
+    -fx-font-weight: 500;
+}
 .size16 {
     -fx-font-size: 16;
 }
@@ -403,3 +412,38 @@ Hbox.listItem {
     -fx-fill: #acacac; 
 }
 
+.borderDashed{
+    -fx-border-width: 0 0 0 2;
+}
+
+.chart {
+    -fx-padding: 10px;
+    -fx-background-color: transparent;
+}
+.chart-content {
+    
+    -fx-background-color: transparent;
+}
+
+.chart-plot-background {
+    -fx-background-color: transparent;
+}
+
+.chart-vertical-grid-lines {
+    -fx-stroke: #fbf9fe;
+}
+.chart-horizontal-grid-lines {
+    -fx-stroke: #fbf9fe;
+}
+
+.chart-series-area-fill {
+    -fx-fill: #F6E72A;
+}
+
+.chart-line-symbol {
+    -fx-background-color: #ac7ef1;
+    -fx-padding: 0px;
+}
+
+.data0.chart-pie { -fx-pie-color: #fbf9fe; }
+.data1.chart-pie { -fx-pie-color: #ac7ef1; }

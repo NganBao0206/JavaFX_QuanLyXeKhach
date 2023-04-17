@@ -3,6 +3,10 @@
 <?import java.lang.String?>
 <?import java.net.URL?>
 <?import javafx.scene.Cursor?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
@@ -147,9 +151,99 @@
                </columnConstraints>
                <rowConstraints>
                   <RowConstraints maxHeight="350.8666748046875" minHeight="10.0" prefHeight="88.4" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="350.8666748046875" minHeight="10.0" prefHeight="146.79999999999998" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="474.6666564941407" minHeight="10.0" prefHeight="489.6666900634765" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="350.8666748046875" minHeight="10.0" prefHeight="318.06669921875" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="474.6666564941407" minHeight="10.0" prefHeight="311.13330078125" vgrow="SOMETIMES" />
                </rowConstraints>
+               <children>
+                  <StackPane style="-fx-padding: 10 20 10 20;" GridPane.rowIndex="1">
+                     <children>
+                        <VBox styleClass="boxWhite">
+                           <children>
+                              <LineChart fx:id="chart1" createSymbols="false" legendVisible="false" prefHeight="326.0" prefWidth="920.0" title="Doanh thu tháng">
+                                <xAxis>
+                                  <CategoryAxis side="BOTTOM" />
+                                </xAxis>
+                                <yAxis>
+                                  <NumberAxis side="LEFT" />
+                                </yAxis>
+                                 <styleClass>
+                                    <String fx:value="boxWhite" />
+                                    <String fx:value="normalText" />
+                                 </styleClass>
+                              </LineChart>
+                           </children>
+                        </VBox>
+                     </children>
+                  </StackPane>
+                  <GridPane GridPane.rowIndex="2">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <StackPane style="-fx-padding: 20;">
+                           <children>
+                              <VBox styleClass="boxWhite">
+                                 <children>
+                                    <PieChart fx:id="chart2" title="Tỷ lệ ghế trung bình" />
+                                 </children>
+                              </VBox>
+                           </children>
+                        </StackPane>
+                        <GridPane GridPane.columnIndex="1">
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <StackPane style="-fx-padding: 20 20 15 10;">
+                                 <children>
+                                    <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" style="-fx-padding: 10 20 10 20; -fx-spacing: 20;" styleClass="boxWhite">
+                                       <children>
+                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="normalText" text="Tổng doanh thu" />
+                                          <Text fx:id="txtTotalSales" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 25;" text="0đ">
+                                             <styleClass>
+                                                <String fx:value="purpleText" />
+                                                <String fx:value="normalText" />
+                                                <String fx:value="boldText" />
+                                             </styleClass>
+                                          </Text>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </StackPane>
+                              <StackPane style="-fx-padding: 15 20 20 10;" GridPane.rowIndex="1">
+                                 <children>
+                                    <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" style="-fx-padding: 10 20 10 20; -fx-spacing: 20;" styleClass="boxWhite">
+                                       <children>
+                                          <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="normalText" text="Tổng số vé đã bán" />
+                                          <Text fx:id="txtTotal" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 25;" text="0">
+                                             <styleClass>
+                                                <String fx:value="purpleText" />
+                                                <String fx:value="normalText" />
+                                                <String fx:value="boldText" />
+                                             </styleClass>
+                                          </Text>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </StackPane>
+                           </children>
+                        </GridPane>
+                     </children>
+                  </GridPane>
+                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" style="-fx-padding: 20;">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="titleText" text="THỐNG KÊ THÁNG" />
+                     </children>
+                  </HBox>
+               </children>
             </GridPane>
             <GridPane fx:id="tabStaff" layoutX="10.0" layoutY="10.0" visible="false">
                <columnConstraints>
@@ -236,7 +330,7 @@
                                                 <String fx:value="normalText" />
                                              </styleClass>
                                           </Button>
-                                          <Button layoutX="508.0" layoutY="10.0" mnemonicParsing="false" prefHeight="97.0" prefWidth="174.0" style="-fx-background-radius: 10;" text="Xóa">
+                                          <Button layoutX="508.0" layoutY="10.0" mnemonicParsing="false" onAction="#deleteUser" prefHeight="97.0" prefWidth="174.0" style="-fx-background-radius: 10;" text="Xóa">
                                              <styleClass>
                                                 <String fx:value="btnGray" />
                                                 <String fx:value="normalText" />

@@ -170,4 +170,27 @@ public class UserService {
             }
         }
     }
+    
+    public int getAmountTicketByUserId (String userId) throws SQLException {
+        try (Connection conn = JdbcUtils.getConn()) {
+            String sql = "SELECT Count(*) FROM ticket WHERE StaffID=?";
+            PreparedStatement stm = conn.prepareCall(sql);
+            stm.setString(1, userId);
+            ResultSet rs = stm.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+            return 0;
+        }
+    }
+    
+    public boolean deleteUser(String userId) throws SQLException {
+        try (Connection conn = JdbcUtils.getConn()) {
+            String sql = "DELETE FROM user WHERE id=?";
+            PreparedStatement stm = conn.prepareCall(sql);
+            stm.setString(1, userId);
+
+            return stm.executeUpdate() > 0;
+        }
+    }
 }

@@ -6,6 +6,7 @@ package com.ou.service;
 
 import com.ou.conf.JdbcUtils;
 import com.ou.pojo.Ticket;
+import com.ou.utils.StatisticalValue;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,33 +14,12 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author Hi
  */
 public class TicketService {
-
-    private final ScheduledExecutorService executor;
-
-    public TicketService() {
-        executor = Executors.newScheduledThreadPool(1);
-        executor.scheduleAtFixedRate(() -> {
-            try {
-                List<Ticket> invalidTickets = getInvalidTickets();
-                for (Ticket t : invalidTickets) {
-                    deleteTicket(t.getId());
-                }
-            } catch (SQLException ex) {
-                Logger.getLogger(TicketService.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }, 0, 1, TimeUnit.MINUTES);
-    }
 
     public boolean addTicket(Ticket t) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
@@ -87,6 +67,46 @@ public class TicketService {
         return tickets;
     }
 
+    public Ticket getTicket(String id) throws SQLException
+    {
+        Ticket t = null;
+        try (Connection conn = JdbcUtils.getConn()) {
+            String sql = "SELECT * "
+                    + "FROM ticket t, seat s, customer c, user u ,bustrip bt, bus b, route r, location l1, location l2 "
+                    + "WHERE t.ID = ? AND t.StaffID = u.ID AND s.ID = t.SeatID "
+                    + "AND t.CustomerID = c.ID AND t.BusTripID = bt.ID "
+                    + "AND bt.BusID = b.ID AND bt.routeID = r.ID "
+                    + "AND r.DepartureID = l1.ID AND r.DestinationID = l2.ID ";
+            
+            PreparedStatement stm = conn.prepareCall(sql);
+            stm.setString(1, id);
+            ResultSet rs = stm.executeQuery();
+            if (rs.next()) {
+                String cusID = rs.getString("CustomerID");
+                String busTripID = rs.getNString("BusTripID");
+                int seatID = rs.getInt("SeatID");
+                String staffID = rs.getNString("StaffID");
+                String status = rs.getString("Status");
+                String staffName = rs.getString("u.Name");
+                String seatName = rs.getString("s.Name");
+                String cusName = rs.getString("c.Name");
+                String cusPhone = rs.getString("c.Phone");
+                String licensePlates = rs.getString("b.LicensePlates");
+                int busId = rs.getInt("b.ID");
+                String departureName = rs.getNString("l1.Name");
+                String destinationName = rs.getNString("l2.Name");
+                double ticketPrice = rs.getDouble("TicketPrice");
+                LocalDateTime departureTime = (LocalDateTime) rs.getObject("DepartureTime");
+                LocalDateTime time = (LocalDateTime) rs.getObject("Time");
+                t = new Ticket(id, cusID, busTripID, seatID, staffID, status, staffName, seatName, cusName, cusPhone, licensePlates, departureName, destinationName, ticketPrice, departureTime);
+                t.setTime(time);
+                t.setBusId(busId);
+            }
+        }
+        return t;
+
+    }
+    
     public List<Ticket> getTickets(String keyword) throws SQLException {
         List<Ticket> tickets = new ArrayList<>();
         try (Connection conn = JdbcUtils.getConn()) {
@@ -116,6 +136,7 @@ public class TicketService {
                 String cusName = rs.getString("c.Name");
                 String cusPhone = rs.getString("c.Phone");
                 String licensePlates = rs.getString("b.LicensePlates");
+                int busId = rs.getInt("b.ID");
                 String departureName = rs.getNString("l1.Name");
                 String destinationName = rs.getNString("l2.Name");
                 double ticketPrice = rs.getDouble("TicketPrice");
@@ -123,6 +144,7 @@ public class TicketService {
                 LocalDateTime time = (LocalDateTime) rs.getObject("Time");
                 Ticket t = new Ticket(id, cusID, busTripID, seatID, staffID, status, staffName, seatName, cusName, cusPhone, licensePlates, departureName, destinationName, ticketPrice, departureTime);
                 t.setTime(time);
+                t.setBusId(busId);
                 tickets.add(t);
             }
         }
@@ -207,6 +229,65 @@ public class TicketService {
                 return count;
             }
             return 0;
+        }
+    }
+    
+
+    public List<StatisticalValue> getMonthlyRevenue(int year, int month) throws SQLException {
+        try (Connection conn = JdbcUtils.getConn()) {
+            conn.setAutoCommit(false);
+            List<StatisticalValue> results = new ArrayList<>();
+            String sql = "SELECT DATE(Time), SUM(TicketPrice) FROM ticket WHERE Status = 'purchased' AND YEAR(ticket.Time) = ? AND MONTH(ticket.Time) = ? GROUP BY DATE(Time)";
+            PreparedStatement stm = conn.prepareCall(sql);
+            stm.setInt(1, year);
+            stm.setInt(2, month);
+            ResultSet rs = stm.executeQuery();
+            while (rs.next()) {
+                String label = rs.getString(1);
+                double value = rs.getDouble(2);
+                results.add(new StatisticalValue(label, value*1000));           
+            }
+            return results;
+        }
+    }
+    
+    public StatisticalValue getAvergePercentageSeat(int year, int month) throws SQLException {
+        try (Connection conn = JdbcUtils.getConn()) {
+            conn.setAutoCommit(false);
+            StatisticalValue results = null;
+            String sql = "SELECT AVG(percentage) ";
+            sql += "FROM ( ";
+            sql += "SELECT bt.ID, (COUNT(DISTINCT t.ID)), COUNT(DISTINCT s.ID), (COUNT(DISTINCT t.ID) / COUNT(DISTINCT s.ID) ) * 100 AS percentage ";
+            sql += "FROM bustrip bt ";
+            sql += "CROSS JOIN seat s LEFT JOIN ticket t ON t.BusTripID = bt.ID WHERE YEAR(bt.DepartureTime) = ? AND MONTH(bt.DepartureTime) = ? ";
+            sql += "GROUP BY bt.ID ) AS subquery";
+            PreparedStatement stm = conn.prepareCall(sql);
+            stm.setInt(1,year);
+            stm.setInt(2, month);
+            ResultSet rs = stm.executeQuery();
+            if (rs.next()) {
+                results = new StatisticalValue("Tỷ lệ ghế đã bán", rs.getDouble(1));
+            }
+            return results;
+        }
+    }    
+    
+    public List<Number> getTotalTicket(int year, int month) throws SQLException {
+        try (Connection conn = JdbcUtils.getConn()) {
+            conn.setAutoCommit(false);
+            List<Number> results = new ArrayList<>();
+            String sql = "SELECT Count(t.id), SUM(t.TicketPrice) FROM Ticket t, busTrip bt WHERE YEAR(bt.DepartureTime) = ? AND MONTH(bt.DepartureTime) = ? AND t.BusTripID = bt.ID AND t.Status = 'purchased'";
+            PreparedStatement stm = conn.prepareCall(sql);
+            stm.setInt(1,year);
+            stm.setInt(2, month);
+            ResultSet rs = stm.executeQuery();
+            if (rs.next()) {
+                int total = rs.getInt(1);
+                double totalSales = rs.getDouble(2) * 1000.0;
+                results.add(totalSales);
+                results.add(total);
+            }
+            return results;
         }
     }
 

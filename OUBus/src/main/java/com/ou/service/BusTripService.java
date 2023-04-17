@@ -8,6 +8,7 @@ import com.ou.utils.ValidResult;
 import com.ou.conf.JdbcUtils;
 import com.ou.pojo.BusTrip;
 import com.ou.pojo.Route;
+import com.ou.pojo.Ticket;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -55,7 +56,7 @@ public class BusTripService {
             stm.setString(1, busTrip.getRouteId());
             stm.setObject(2, busTrip.getDepartureTime());
             stm.setInt(3, busTrip.getBusId());
-            stm.setDouble(4,(double) busTrip.getSurcharge() / 1000);
+            stm.setDouble(4, (double) busTrip.getSurcharge() / 1000);
             stm.setString(5, busTrip.getId());
             stm.executeUpdate();
             try {
@@ -119,11 +120,10 @@ public class BusTripService {
                 Route routeBusTrip = rsv.getRoute(busTrip.getRouteId());
                 if (beforeTrip.getDestinationId() == routeBusTrip.getDepartureId()) {
                     middleRoute = new Route(-1, -1, 0, 0);
-                }
-                else {
-                    middleRoute = rsv.getRoute("-1",beforeTrip.getDestinationId(), routeBusTrip.getDepartureId());
+                } else {
+                    middleRoute = rsv.getRoute("-1", beforeTrip.getDestinationId(), routeBusTrip.getDepartureId());
                     if (middleRoute == null) {
-                        middleRoute = rsv.getRoute("-1",routeBusTrip.getDepartureId(), beforeTrip.getDestinationId());
+                        middleRoute = rsv.getRoute("-1", routeBusTrip.getDepartureId(), beforeTrip.getDestinationId());
                         if (middleRoute == null) {
                             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
                             LocalDateTime arrivalTimeOfBeforeTrip = beforeTrip.getDepartureTime().plusMinutes(beforeTrip.getTotalTime());
@@ -132,9 +132,9 @@ public class BusTripService {
                         }
                     }
                 }
-                
+
                 minTime = arrivalTime.plusMinutes(middleRoute.getTotalTime());
-                
+
                 if (busTrip.getDepartureTime().isBefore(minTime)) {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
                     LocalDateTime arrivalTimeOfBeforeTrip = beforeTrip.getDepartureTime().plusMinutes(beforeTrip.getTotalTime());
@@ -174,15 +174,14 @@ public class BusTripService {
             Route middleRoute = null;
             if (afterTrip != null) {
                 LocalDateTime arrivalTime = busTrip.getDepartureTime().plusMinutes(busTrip.getTotalTime());
-                
+
                 Route routeBusTrip = rsv.getRoute(busTrip.getRouteId());
                 if (routeBusTrip.getDestinationId() == afterTrip.getDepartureId()) {
                     middleRoute = new Route(-1, -1, 0, 0);
-                }
-                else {
-                    middleRoute = rsv.getRoute("-1",routeBusTrip.getDestinationId(), afterTrip.getDepartureId());
+                } else {
+                    middleRoute = rsv.getRoute("-1", routeBusTrip.getDestinationId(), afterTrip.getDepartureId());
                     if (middleRoute == null) {
-                        middleRoute = rsv.getRoute("-1",afterTrip.getDepartureId(), routeBusTrip.getDestinationId());
+                        middleRoute = rsv.getRoute("-1", afterTrip.getDepartureId(), routeBusTrip.getDestinationId());
                         if (middleRoute == null) {
                             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
                             LocalDateTime arrivalTimeOfBeforeTrip = afterTrip.getDepartureTime();
@@ -202,7 +201,7 @@ public class BusTripService {
             }
             return new ValidResult(1, "", afterTrip, middleRoute, minTime);
         }
-        
+
     }
 
     public BusTrip getBusTripById(String id) throws SQLException {
@@ -221,7 +220,36 @@ public class BusTripService {
         }
         return null;
     }
-    
+
+    public BusTrip getBusTrip(String id) throws SQLException {
+        try (Connection conn = JdbcUtils.getConn()) {
+            String sql = "SELECT * FROM bustrip b, route r, location l1, location l2 "
+                    + "WHERE b.RouteID = r.ID AND r.DepartureID = l1.ID "
+                    + "AND r.DestinationID = l2.ID "
+                    + "AND b.ID = ? ";
+            PreparedStatement stm = conn.prepareCall(sql);
+            stm.setString(1, id);
+            ResultSet rs = stm.executeQuery();
+            if (rs.next()) {
+                String routeId = rs.getNString("RouteID");
+                LocalDateTime departureTime = (LocalDateTime) rs.getObject("DepartureTime");
+                int busId = rs.getInt("BusID");
+                double price = rs.getDouble("Price");
+                double surcharge = rs.getDouble("Surcharge");
+                int totalTime = rs.getInt("TotalTime");
+                String departureName = rs.getNString("l1.Name");
+                String destinationName = rs.getNString("l2.Name");
+                BusTrip b = new BusTrip(id, routeId, departureTime, busId, price, surcharge, totalTime, departureName, destinationName);
+                SeatService ss = new SeatService();
+                TicketService ts = new TicketService();
+                List<Ticket> tickets = ts.getTicketsByBusTrip(id);
+                b.setEmptySeats(ss.getSeats().size() - tickets.size());
+                return b;
+            }
+            return null;
+        }
+    }
+
     public List<BusTrip> getBusTripsEmployee(LocalDate departureDate, int departureId, int destinationId) throws SQLException {
         List<BusTrip> busTrips = new ArrayList<>();
         try (Connection conn = JdbcUtils.getConn()) {
@@ -253,6 +281,7 @@ public class BusTripService {
 
             ResultSet rs = stm.executeQuery();
             while (rs.next()) {
+
                 String id = rs.getNString("ID");
                 String routeId = rs.getNString("RouteID");
                 LocalDateTime departureTime = (LocalDateTime) rs.getObject("DepartureTime");
@@ -262,8 +291,14 @@ public class BusTripService {
                 int totalTime = rs.getInt("TotalTime");
                 String departureName = rs.getNString("l1.Name");
                 String destinationName = rs.getNString("l2.Name");
-
-                busTrips.add(new BusTrip(id, routeId, departureTime, busId, price, surcharge, totalTime, departureName, destinationName));
+                BusTrip b = new BusTrip(id, routeId, departureTime, busId, price, surcharge, totalTime, departureName, destinationName);
+                SeatService ss = new SeatService();
+                TicketService ts = new TicketService();
+                List<Ticket> tickets = ts.getTicketsByBusTrip(id);
+                b.setEmptySeats(ss.getSeats().size() - tickets.size());
+                if (b.getEmptySeats() > 0) {
+                    busTrips.add(b);
+                }
             }
         }
         return busTrips;

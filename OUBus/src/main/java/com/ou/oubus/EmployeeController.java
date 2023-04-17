@@ -32,7 +32,9 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -130,8 +132,9 @@ public class EmployeeController implements Initializable {
             txtCusPhone.textProperty().addListener((observable, oldValue, newValue) -> {
                 if (!newValue.matches("^\\d{10}$")) {
                     txtCusPhone.setText(newValue.replaceAll("[^0-9]", ""));
-                    if (txtCusPhone.getText().length() > 10)
+                    if (txtCusPhone.getText().length() > 10) {
                         txtCusPhone.setText(txtCusPhone.getText().substring(0, 10));
+                    }
                 }
             });
 
@@ -166,6 +169,8 @@ public class EmployeeController implements Initializable {
         selectedTab.setVisible(true);
         tabChangeTicket.setVisible(false);
         tabViewTicket.setVisible(true);
+        tabChooseBuy.setVisible(true);
+        tabComfirmBuy.setVisible(false);
     }
 
     public void signOut(Event e) throws IOException {
@@ -279,9 +284,17 @@ public class EmployeeController implements Initializable {
             alert.showAndWait();
             return;
         } else {
-
-            BusTrip bt = tbBusTrip.getSelectionModel().getSelectedItem() instanceof BusTrip ? (BusTrip) tbBusTrip.getSelectionModel().getSelectedItem() : null;
+            BusTripService bts = new BusTripService();
+            BusTrip b = tbBusTrip.getSelectionModel().getSelectedItem() instanceof BusTrip ? (BusTrip) tbBusTrip.getSelectionModel().getSelectedItem() : null;
+            BusTrip bt = bts.getBusTrip(b.getId());
             if (bt != null) {
+                if (bt.getEmptySeats() == 0) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "Chuyến xe đã hết chỗ ngồi", ButtonType.OK);
+                    alert.showAndWait();
+                    loadTableTicketData(txtSearchCustomer.getText());
+                    searchBusTrip();
+                    return;
+                }
                 txtStartLocation.setText(bt.getDepartureName());
                 txtEndLocation.setText(bt.getDestinationName());
                 String text = String.format("%.0f", bt.getPrice() * 1000);
@@ -294,6 +307,7 @@ public class EmployeeController implements Initializable {
                 loadSeatByBusTrip();
                 listSelectedSeat.clear();
             }
+            
         }
         txtCusName.setText("");
         txtCusPhone.setText("");
@@ -325,12 +339,13 @@ public class EmployeeController implements Initializable {
         }
     }
 
-    public void confirmBuy(ActionEvent e) throws SQLException {
+    public void confirmBuy(ActionEvent e) throws SQLException, IOException {
         if (listSelectedSeat.isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.WARNING, "Bạn chưa chọn ghế nào", ButtonType.OK);
             alert.showAndWait();
             return;
         }
+        List<Ticket> tickets = new ArrayList<>();
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Xác nhận mua vé?");
         alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
         Optional<ButtonType> result = alert.showAndWait();
@@ -363,12 +378,24 @@ public class EmployeeController implements Initializable {
                         Alert al = new Alert(Alert.AlertType.ERROR, "Đã có lỗi xảy ra, không thể thêm");
                         al.show();
                     }
+                    tickets.add(ts.getTicket(t.getId()));
                 }
-                Alert al = new Alert(Alert.AlertType.INFORMATION, "Mua vé thành công");
-                al.showAndWait();
+                Alert al = new Alert(Alert.AlertType.CONFIRMATION, "Mua vé thành công, bạn có muốn xuất vé? ");
+                al.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+                Optional<ButtonType> rs = al.showAndWait();
+                if (rs.get() == ButtonType.YES) {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("exportTicket.fxml"));
+                    Parent root = loader.load();
+                    TicketExportController tec = loader.getController();
+                    tec.setTickets(tickets);
+                    tec.loadTickets();
+                    App.setRoot(root);
+
+                }
                 tabChooseBuy.setVisible(true);
                 tabComfirmBuy.setVisible(false);
                 loadTableTicketData(txtSearchCustomer.getText());
+                searchBusTrip();
             } else {
                 Alert al = new Alert(Alert.AlertType.INFORMATION, "Còn 5 phút nữa là xe khởi hành, bạn không thể mua vé");
                 al.show();
@@ -420,8 +447,9 @@ public class EmployeeController implements Initializable {
                 tabChooseBuy.setVisible(true);
                 tabComfirmBuy.setVisible(false);
                 loadTableTicketData(txtSearchCustomer.getText());
+                searchBusTrip();
             } else {
-                Alert al = new Alert(Alert.AlertType.INFORMATION, "Còn 5 phút nữa là xe khởi hành, bạn không thể mua vé");
+                Alert al = new Alert(Alert.AlertType.INFORMATION, "Bạn không thể đặt vé trước 60 phút xe khởi hành");
                 al.show();
             }
         }
@@ -491,7 +519,8 @@ public class EmployeeController implements Initializable {
         alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.YES) {
-            Ticket selectedItem = (Ticket) tbTicket.getSelectionModel().getSelectedItem();
+            Ticket t = (Ticket) tbTicket.getSelectionModel().getSelectedItem();
+            Ticket selectedItem = ts.getTicket(t.getId());
             if (selectedItem != null) {
                 if (selectedItem.getStatus().equals("purchased")) {
                     Alert al = new Alert(Alert.AlertType.INFORMATION, "Không thể hủy vé đã mua");
@@ -501,22 +530,17 @@ public class EmployeeController implements Initializable {
                 String id = selectedItem.getId();
                 if (ts.deleteTicket(id) == true) {
                     Alert announce = new Alert(Alert.AlertType.INFORMATION, "Hủy vé thành công");
-                    tbTicket.getItems().remove(selectedItem);
                     announce.showAndWait();
-                    Platform.runLater(() -> {
-                        try {
-                            List<Seat> seats = ss.getSeats();
-                            for (int i = 0; i < seats.size(); i++) {
-                                Button b = (Button) App.getScene().lookup("#" + seats.get(i).getName());
-                                btn.add(b);
-                            }
-                        } catch (SQLException ex) {
-                            Logger.getLogger(EmployeeController.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    });
+                    loadTableTicketData(txtSearchCustomer.getText());
+                    searchBusTrip();
                 }
-
+            } else {
+                Alert al = new Alert(Alert.AlertType.INFORMATION, "Đã qua 30 phút kể từ lần đặt vé đầu tiên, vé đã hủy");
+                al.show();
+                loadTableTicketData(txtSearchCustomer.getText());
+                searchBusTrip();
             }
+           
 
         }
     }
@@ -531,7 +555,8 @@ public class EmployeeController implements Initializable {
         alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.YES) {
-            Ticket selectedItem = (Ticket) tbTicket.getSelectionModel().getSelectedItem();
+            Ticket t = (Ticket) tbTicket.getSelectionModel().getSelectedItem();
+            Ticket selectedItem = ts.getTicket(t.getId());
             if (selectedItem != null) {
                 if (selectedItem.getStatus().equals("purchased")) {
                     Alert al = new Alert(Alert.AlertType.INFORMATION, "Vé đã mua");
@@ -545,6 +570,9 @@ public class EmployeeController implements Initializable {
                     Alert al = new Alert(Alert.AlertType.INFORMATION, "Không thể đặt vé vì thời gian đặt quá 30 phút");
                     al.show();
                 }
+            } else {
+                Alert al = new Alert(Alert.AlertType.INFORMATION, "Đã qua 30 phút kể từ lần đặt vé đầu tiên, vé đã hủy");
+                al.show();
             }
         }
     }
@@ -590,9 +618,29 @@ public class EmployeeController implements Initializable {
             alert.showAndWait();
             return;
         }
-
         ticketEditing = tbTicket.getSelectionModel().getSelectedItem() instanceof Ticket ? (Ticket) tbTicket.getSelectionModel().getSelectedItem() : null;
+        Ticket tk = ts.getTicket(ticketEditing.getId());
+        if (tk == null) {
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Đã qua 30 phút kể từ lần đặt vé đầu tiên, đã bị hủy", ButtonType.OK);
+            alert.showAndWait();
+            loadTableTicketData(txtSearchCustomer.getText());
+            searchBusTrip();
+            return;
+        }
+        ticketEditing = tk;
+        if (ticketEditing.getStatus().equals(String.valueOf("purchased"))) {
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Bạn không thể đổi vé khi bạn đã mua vé", ButtonType.OK);
+            alert.showAndWait();
+            return;
+        }
         if (ticketEditing != null) {
+            
+            if(!ticketEditing.getDepartureTime().plusMinutes(60).isBefore(LocalDateTime.now()))
+            {
+                Alert al = new Alert(Alert.AlertType.WARNING, "Bạn không thể sửa vé đặt trong 60 phút trước giờ khởi hành", ButtonType.OK);
+                al.showAndWait();
+                return;
+            }
             CustomerNameOfTicket.setText(ticketEditing.getCusName());
             PhoneNameOfTicket.setText(ticketEditing.getCusPhone());
             newBusTripId = ticketEditing.getBusTripId();
@@ -689,24 +737,22 @@ public class EmployeeController implements Initializable {
         alert.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
         Optional<ButtonType> result = alert.showAndWait();
         if (result.get() == ButtonType.YES) {
+            if(!ticketEditing.getDepartureTime().plusMinutes(60).isBefore(LocalDateTime.now()))
+            {
+                Alert al = new Alert(Alert.AlertType.WARNING, "Bạn không thể sửa vé đặt trong 60 phút trước giờ khởi hành", ButtonType.OK);
+                al.showAndWait();
+                return;
+            }
             BusTripService bts = new BusTripService();
             BusTrip bt = bts.getBusTripById(newBusTripId);
             LocalDateTime departureTime = bt.getDepartureTime();
+            
 //            if (CustomerNameOfTicket.getText().isBlank() || PhoneNameOfTicket.getText().isBlank()) {
 //                Alert al = new Alert(Alert.AlertType.WARNING, "Vui lòng điền đầy đủ thông tin", ButtonType.OK);
 //                al.showAndWait();
 //                return;
 //            }
-            if ("booked".equals(ticketEditing.getStatus()) && !departureTime.isAfter(LocalDateTime.now().plusMinutes(60))) {
-                Alert al = new Alert(Alert.AlertType.WARNING, "Bạn không thể đặt xe trong 60 phút trước giờ khởi hành", ButtonType.OK);
-                al.showAndWait();
-                return;
-            }
-            if ("purchased".equals(ticketEditing.getStatus()) && !departureTime.isAfter(LocalDateTime.now().plusMinutes(5))) {
-                Alert al = new Alert(Alert.AlertType.WARNING, "Bạn không thể đổi vé trong 5 phút trước giờ khởi hành", ButtonType.OK);
-                al.showAndWait();
-                return;
-            }
+            
 //            Customer c = cs.getCustomer(CustomerNameOfTicket.getText(), PhoneNameOfTicket.getText());
 //            if (c == null || !c.getId().equals(ticketEditing.getCustomerId())) {
 //                int count = ts.getAmountTicketOfCustomer(ticketEditing.getCustomerId());
@@ -725,6 +771,12 @@ public class EmployeeController implements Initializable {
             ticketEditing.setStaffId(CurrentUser.getInstance().getUser().getId());
             ticketEditing.setSeatId(ss.getSeat(selectSeatEdit.getId().replaceAll("seat", "")).getId());
             ticketEditing.setBusTripId(newBusTripId);
+            System.out.println("Nhin o day " + departureTime.toString());
+            if (departureTime.isBefore(LocalDateTime.now().plusMinutes(60))) {
+                Alert al = new Alert(Alert.AlertType.WARNING, "Bạn không thể sửa vé đặt trong 60 phút trước giờ khởi hành", ButtonType.OK);
+                al.showAndWait();
+                return;
+            }
 //            ticketEditing.setCustomerId(c.getId());
             if (ts.editTicket(ticketEditing)) {
                 Alert al = new Alert(Alert.AlertType.INFORMATION, "Đổi thành công", ButtonType.OK);
@@ -737,6 +789,37 @@ public class EmployeeController implements Initializable {
                 al.showAndWait();
             }
 
+        }
+
+    }
+
+    public void exportTicket(ActionEvent e) throws IOException {
+        if (tbTicket.getSelectionModel().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Bạn chưa chọn vé nào", ButtonType.OK);
+            alert.showAndWait();
+            return;
+        }
+        Object selection = tbTicket.getSelectionModel().getSelectedItem();
+        Ticket selectedTicket = selection instanceof Ticket ? (Ticket) selection : null;
+        if (selectedTicket.getStatus().equals("booked")) {
+            Alert a = new Alert(Alert.AlertType.ERROR, "Bạn không thể xuất vé chưa thanh toán", ButtonType.OK);
+            a.showAndWait();
+            return;
+        }
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("exportTicket.fxml"));
+        Parent root = loader.load();
+        TicketExportController c = loader.getController();
+        Object o = tbTicket.getSelectionModel().getSelectedItem();
+        Ticket t = o instanceof Ticket ? (Ticket) o : null;
+        List<Ticket> tickets = new ArrayList<>();
+        if (t != null) {
+            tickets.add(t);
+            c.setTickets(tickets);
+            c.loadTickets();
+            App.setRoot(root);
+        } else {
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Đã có lỗi xảy ra", ButtonType.OK);
+            alert.showAndWait();
         }
 
     }

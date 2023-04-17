@@ -951,7 +951,7 @@ public class AdminController implements Initializable {
                                 cbBusEdit.getSelectionModel().select(index);
 
                                 // Surcharge
-                                String surcharge = bt.getSurcharge() != 0 ? String.valueOf(bt.getSurcharge() * 1000) : "0";
+                                String surcharge = bt.getSurcharge() != 0 ? String.valueOf((int)bt.getSurcharge() * 1000) : "0";
                                 txtSurchargeEdit.setText(surcharge);
 
                                 tabEditBusTrip.setVisible(true);
@@ -1418,7 +1418,7 @@ public class AdminController implements Initializable {
                 }
             }
 
-            txtRoutePrice.setText(String.valueOf(selectedRoute.getPrice() * 1000));
+            txtRoutePrice.setText(String.valueOf((int)selectedRoute.getPrice() * 1000));
             txtRouteTime.setText(String.valueOf(selectedRoute.getTotalTime()));
         }
     }

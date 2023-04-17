@@ -94,9 +94,9 @@ public class BusTripTester {
     @Test
     void testIsValidBusTrip() throws SQLException {
         BusTrip bt = new BusTrip();
-        bt.setBusId(20);
+        bt.setBusId(27);
         bt.setRouteId("a5b661cc-f9b2-4a68-a2ad-262f6e09fd81");
-        bt.setDepartureTime(LocalDateTime.of(2023, Month.APRIL, 23, 14, 0, 0));
+        bt.setDepartureTime(LocalDateTime.of(2023, Month.APRIL, 19, 14, 1, 0));
         bt.setSurcharge(0);
         bt.setTotalTime(540);
         bt.setDepartureId(5);
@@ -105,7 +105,7 @@ public class BusTripTester {
         boolean actual = bts.isValidBusTrip(bt);
         Assertions.assertTrue(actual);
 
-        bt.setDepartureTime(LocalDateTime.of(2023, Month.APRIL, 23, 12, 0, 0));
+        bt.setDepartureTime(LocalDateTime.of(2023, Month.APRIL, 19, 12, 0, 0));
         actual = bts.isValidBusTrip(bt);
         Assertions.assertFalse(actual);
     }
@@ -113,9 +113,9 @@ public class BusTripTester {
     @Test
     void testIsValidBusTripWithBeforeTrip() throws SQLException {
         BusTrip bt = new BusTrip();
-        bt.setBusId(20);
+        bt.setBusId(27);
         bt.setRouteId("a5b661cc-f9b2-4a68-a2ad-262f6e09fd81");
-        bt.setDepartureTime(LocalDateTime.of(2023, Month.APRIL, 23, 14, 0, 0));
+        bt.setDepartureTime(LocalDateTime.of(2023, Month.APRIL, 19, 14,  1, 0));
         bt.setSurcharge(0);
         bt.setTotalTime(540);
         bt.setDepartureId(5);
@@ -124,7 +124,7 @@ public class BusTripTester {
         ValidResult actual = bts.isValidBusTripWithBeforeTrip(bt);
         Assertions.assertNotNull(actual.getTrip());
         Assertions.assertEquals(1, actual.getResult());
-        Assertions.assertEquals(LocalDateTime.of(2023, Month.APRIL, 23, 14, 0, 0), actual.getMinDate());
+        Assertions.assertEquals(LocalDateTime.of(2023, Month.APRIL, 19, 14, 0, 0), actual.getMinDate());
         Assertions.assertEquals(-1, actual.getMidRoute().getDepartureId());
     }
 
@@ -133,7 +133,7 @@ public class BusTripTester {
         BusTrip bt = new BusTrip();
         bt.setBusId(20);
         bt.setRouteId("a5b661cc-f9b2-4a68-a2ad-262f6e09fd81");
-        bt.setDepartureTime(LocalDateTime.of(2023, Month.APRIL, 23, 14, 0, 0));
+        bt.setDepartureTime(LocalDateTime.of(2023, Month.APRIL, 23, 14, 1, 0));
         bt.setSurcharge(0);
         bt.setTotalTime(540);
         bt.setDepartureId(5);
@@ -142,7 +142,7 @@ public class BusTripTester {
         ValidResult actual = bts.isValidBusTripWithAfterTrip(bt);
         Assertions.assertNotNull(actual.getTrip());
         Assertions.assertEquals(1, actual.getResult());
-        Assertions.assertEquals(LocalDateTime.of(2023, Month.APRIL, 23, 23, 0, 0), actual.getMinDate());
+        Assertions.assertEquals(LocalDateTime.of(2023, Month.APRIL, 23, 23, 1, 0), actual.getMinDate());
         Assertions.assertEquals(-1, actual.getMidRoute().getDepartureId());
     }
 

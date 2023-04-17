@@ -260,6 +260,22 @@ public class TicketTester {
         //Kiểm tra kết quả trả về
         Assertions.assertNotNull(result);
         
-        
+        //Kiểm tra giá trị
+        Assertions.assertEquals(11.45833333, result.getValue());      
     }
+    
+    @Test
+    void testGetTotalTicket() throws SQLException {
+        int year = 2023;
+        int month = 4;
+        List<Number> results = ts.getTotalTicket(2023, 4);
+        
+        //Kiểm tra kết quả trả về
+        Assertions.assertNotNull(results);
+        
+        //Kiểm tra giá trị
+        Assertions.assertEquals(4910000.000, results.get(0));
+        Assertions.assertEquals(21, results.get(1));
+    }
+    
 }

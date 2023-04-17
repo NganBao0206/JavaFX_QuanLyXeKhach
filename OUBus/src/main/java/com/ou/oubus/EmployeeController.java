@@ -641,6 +641,9 @@ public class EmployeeController implements Initializable {
                 al.showAndWait();
                 return;
             }
+            cbDeparture.getSelectionModel().select(null);
+            cbDestination.getSelectionModel().select(null);
+            dpDepartureDate.setValue(null);
             CustomerNameOfTicket.setText(ticketEditing.getCusName());
             PhoneNameOfTicket.setText(ticketEditing.getCusPhone());
             newBusTripId = ticketEditing.getBusTripId();
@@ -783,9 +786,7 @@ public class EmployeeController implements Initializable {
                 loadTableTicketData(txtSearchCustomer.getText());
                 tabViewTicket.setVisible(true);
                 tabChangeTicket.setVisible(false);
-                cbDeparture.getSelectionModel().select(null);
-                cbDestination.getSelectionModel().select(null);
-                dpDepartureDate.setValue(null);
+                
             } else {
                 Alert al = new Alert(Alert.AlertType.WARNING, "Đã có lỗi xảy ra, có thể đã qua 30 phút kể từ lần đặt vé đầu tiên", ButtonType.OK);
                 al.showAndWait();

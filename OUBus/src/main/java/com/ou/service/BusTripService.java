@@ -135,7 +135,7 @@ public class BusTripService {
 
                 minTime = arrivalTime.plusMinutes(middleRoute.getTotalTime());
 
-                if (busTrip.getDepartureTime().isBefore(minTime)) {
+                if (!busTrip.getDepartureTime().isAfter(minTime)) {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
                     LocalDateTime arrivalTimeOfBeforeTrip = beforeTrip.getDepartureTime().plusMinutes(beforeTrip.getTotalTime());
                     String date = arrivalTimeOfBeforeTrip.format(formatter);
@@ -191,7 +191,7 @@ public class BusTripService {
                     }
                 }
                 minTime = arrivalTime.plusMinutes(middleRoute.getTotalTime());
-                if (afterTrip.getDepartureTime().isBefore(minTime)) {
+                if (!afterTrip.getDepartureTime().isAfter(minTime)) {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
                     LocalDateTime arrivalTimeOfBeforeTrip = afterTrip.getDepartureTime();
                     String date = arrivalTimeOfBeforeTrip.format(formatter);

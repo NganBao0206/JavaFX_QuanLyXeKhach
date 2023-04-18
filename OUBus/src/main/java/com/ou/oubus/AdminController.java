@@ -401,7 +401,11 @@ public class AdminController implements Initializable {
                         try {
                             if (a.clickBtnDel()) {
                                 loadItemLocation(txtSearchLocation.getText());
+                                editButtonCurrent = null;
                                 loadListLocation();
+                                loadTableRouteData();
+                                loadListRoute();
+                                filterBusTrip();
                             }
                         } catch (SQLException ex) {
                             Logger.getLogger(AdminController.class.getName()).log(Level.SEVERE, null, ex);
@@ -458,7 +462,6 @@ public class AdminController implements Initializable {
 //        selectedTab = tab;
 //        selectedTab.setVisible(true);
 //    }
-
     public void selectHome(ActionEvent e) {
         selectedItem.getStyleClass().remove("menuSelectedItem");
         selectedTab.setVisible(false);
@@ -485,7 +488,7 @@ public class AdminController implements Initializable {
         txtName.setText("");
         loadTableUserData();
     }
-    
+
     public void selectLocation(ActionEvent e) throws SQLException {
         selectedItem.getStyleClass().remove("menuSelectedItem");
         selectedTab.setVisible(false);
@@ -499,7 +502,7 @@ public class AdminController implements Initializable {
         txtNewLocation.setText("");
         loadItemLocation("");
     }
-    
+
     public void selectRoute(ActionEvent e) throws SQLException {
         selectedItem.getStyleClass().remove("menuSelectedItem");
         selectedTab.setVisible(false);
@@ -515,7 +518,7 @@ public class AdminController implements Initializable {
         txtRouteTime.setText("");
         loadTableRouteData();
     }
-    
+
     public void selectBusTrip(ActionEvent e) throws SQLException {
         selectedItem.getStyleClass().remove("menuSelectedItem");
         selectedTab.setVisible(false);
@@ -1094,7 +1097,7 @@ public class AdminController implements Initializable {
         txtSurcharge.setText("0");
         tabAddBusTrip.setVisible(true);
         tabViewBusTrip.setVisible(false);
-        
+
     }
 
     public void backFromAddBusTrip() {

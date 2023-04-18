@@ -62,7 +62,7 @@ public class SeatService {
         return null;
     }
 
-    public int getSeatsAmount(String busTripID) throws SQLException {
+    public int getEmptySeatByBusTrip(String busTripID) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
             String sql = "SELECT (Count(distinct s.id) - count(distinct t.id)) as Count\n"
                     + "FROM Ticket t\n"
@@ -71,7 +71,10 @@ public class SeatService {
             PreparedStatement stm = conn.prepareCall(sql);
             stm.setString(1, busTripID);
             ResultSet rs = stm.executeQuery(); 
-            return rs.getInt("Count");
+            if (rs.next()) {
+                return rs.getInt("Count");
+            }
+            return 0;
         }
     }
 }

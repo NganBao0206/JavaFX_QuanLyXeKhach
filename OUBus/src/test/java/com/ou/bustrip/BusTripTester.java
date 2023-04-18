@@ -184,7 +184,31 @@ public class BusTripTester {
         Assertions.assertEquals("Thành phố Hồ Chí Minh", firstBusTrip.getDepartureName());
         Assertions.assertEquals("Cà Mau", firstBusTrip.getDestinationName());
     }
+    
+    @Test
+    void testGetBusTripsEmployee() throws SQLException {
+        List<BusTrip> busTrips = bts.getBusTripsEmployee(LocalDate.of(2023, Month.APRIL, 29), 1, 4);
 
+        //Kiểm tra kết quả trả về
+        Assertions.assertNotNull(busTrips);
+
+        //Kiểm tra số lượng trả về
+        Assertions.assertEquals(1, busTrips.size());
+
+        //Kiểm tra đối tượng trả về
+        BusTrip firstBusTrip = busTrips.get(0);
+        Assertions.assertEquals("d4d6aae4-a6e5-4f0a-91da-ebb33f69e369", firstBusTrip.getId());
+        Assertions.assertEquals("6daf7025-39f3-4a5f-90c0-4061b0f90f35", firstBusTrip.getRouteId());
+        Assertions.assertEquals(LocalDateTime.of(2023, Month.APRIL, 29, 6, 0, 0), firstBusTrip.getDepartureTime());
+        Assertions.assertEquals(22, firstBusTrip.getBusId());
+        Assertions.assertEquals(150.00, firstBusTrip.getPrice());
+        Assertions.assertEquals(0, firstBusTrip.getSurcharge());
+        Assertions.assertEquals(150, firstBusTrip.getTotalTime());
+        Assertions.assertEquals("Hồ Chí Minh", firstBusTrip.getDepartureName());
+        Assertions.assertEquals("Long An", firstBusTrip.getDestinationName());
+        Assertions.assertEquals(21, firstBusTrip.getEmptySeats());     
+    }
+    
     @Test
     void testDeleteBusTrip() throws SQLException {
         boolean result = bts.deleteBusTrip("970a5796-0234-4a65-9a02-7c2a12b73b63");

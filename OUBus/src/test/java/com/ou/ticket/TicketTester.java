@@ -12,9 +12,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.jupiter.api.BeforeAll;
@@ -44,6 +48,23 @@ public class TicketTester {
         }
     }
 
+    @Test
+    void testUniqueSeat() throws SQLException {
+        String sql = "SELECT SeatID FROM Ticket WHERE BusTripID = ?";
+        PreparedStatement stm = conn.prepareCall(sql);
+        stm.setString(1, "d4dcc0d6-8fbe-4227-907c-402e003dd4b9");
+        ResultSet rs = stm.executeQuery();
+        
+        List<Integer> kq = new ArrayList<>();
+        while (rs.next()) {
+            int id = rs.getInt("SeatID");
+            kq.add(id);
+        }
+        
+        Set<Integer> kq2 = new HashSet<>(kq);
+
+        Assertions.assertEquals(kq.size(), kq2.size());
+    }
     
     @Test
     void testAddTicket() throws SQLException {
@@ -229,8 +250,42 @@ public class TicketTester {
     }
     
     @Test
-    void testGetTicketsById(){
-        String id = "01656231-d575-4f17-a54f-ffeab3cf3010";
+    void testGetTicketsById() throws SQLException{
+        Ticket t = new Ticket();
+        String id = "fb159109-9514-476e-987b-3ca77b815c6c";
+        t.setId(id);
+        try 
+        {
+            boolean actual = ts.editTicket(t); 
+            Assertions.assertTrue(actual);
+            
+            String sql = "SELECT * FROM ticket WHERE id = ?";
+            PreparedStatement stm = conn.prepareCall(sql);
+            stm.setString(1,t.getId());
+            
+            ResultSet rs = stm.executeQuery();
+            Assertions.assertNotNull(rs.next());
+            
+            Assertions.assertEquals("fb159109-9514-476e-987b-3ca77b815c6c",t.getId());
+            
+            
+        }
+        catch (SQLException ex) {
+            Logger.getLogger(TicketTester.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    @Test
+    void testGetAmountTicketOfCustomer(){
+        int count;
+        String cusID = "61d50aa0-15a1-4eeb-b1fa-f56a5fbe2958";
+        try{
+            count = ts.getAmountTicketOfCustomer(cusID); 
+            Assertions.assertEquals(4, count);
+        }
+        catch (SQLException ex) {
+            Logger.getLogger(TicketTester.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
      @Test

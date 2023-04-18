@@ -1,11 +1,16 @@
 -------------------------------------------------------------------------------
 Test set: com.ou.bustrip.BusTripTester
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.716 s <<< FAILURE! - in com.ou.bustrip.BusTripTester
-com.ou.bustrip.BusTripTester.testIsValidBusTripWithBeforeTrip  Time elapsed: 0.171 s  <<< ERROR!
-java.lang.NullPointerException: Cannot invoke "com.ou.pojo.Route.getDepartureId()" because "routeBusTrip" is null
-	at com.ou.oubus/com.ou.service.BusTripService.isValidBusTripWithBeforeTrip(BusTripService.java:121)
-	at com.ou.oubus/com.ou.bustrip.BusTripTester.testIsValidBusTripWithBeforeTrip(BusTripTester.java:124)
+Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.701 s <<< FAILURE! - in com.ou.bustrip.BusTripTester
+com.ou.bustrip.BusTripTester.testGetBusTrips  Time elapsed: 0.135 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <2ae58bad-4c0d-4729-ac9e-08de635d4bf2> but was: <19d37b0f-1324-4a69-9038-cd4c6c5b898e>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+	at org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:182)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:177)
+	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1142)
+	at com.ou.oubus/com.ou.bustrip.BusTripTester.testGetBusTrips(BusTripTester.java:176)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
 	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)

@@ -70,24 +70,21 @@ public class UserTester {
     }
 
     @Test
-    public void testAddSuccessful() {
+    public void testAddSuccessful() throws SQLException {
         User u = new User("abc", "123", "Vo Phu Phat", "staff");
-        try {
-            boolean actual = us.addUser(u);
-            Assertions.assertTrue(actual);
-            
-            String sql = "SELECT * FROM user WHERE id=?";
-            PreparedStatement stm = conn.prepareCall(sql);
-            stm.setString(1, u.getId());
+        boolean actual = us.addUser(u);
+        Assertions.assertTrue(actual);
 
-            ResultSet rs = stm.executeQuery();
-            Assertions.assertNotNull(rs.next());
-            Assertions.assertEquals("abc", rs.getString("username"));
-            Assertions.assertEquals("Vo Phu Phat", rs.getString("name"));
-            Assertions.assertEquals("staff", rs.getString("staff"));
-        } catch (SQLException ex) {
-            Logger.getLogger(UserTester.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        String sql = "SELECT * FROM user WHERE id=?";
+        PreparedStatement stm = conn.prepareCall(sql);
+        stm.setString(1, u.getId());
+
+        ResultSet rs = stm.executeQuery();
+        Assertions.assertNotNull(rs.next());
+        Assertions.assertEquals("abc", rs.getString("username"));
+        Assertions.assertEquals("Vo Phu Phat", rs.getString("name"));
+        Assertions.assertEquals("staff", rs.getString("staff"));
+
     }
 
     @Test
@@ -116,12 +113,12 @@ public class UserTester {
         Assertions.assertEquals("$2a$10$7FknVd8C1A9r1HEiu/IZt.cXDpNHaqG0SxwYHFb70Rtas5paNbLzK", user.getPassword());
         Assertions.assertEquals("staff", user.getUserRole());
     }
-    
+
     @Test
     void testGetUserByUsernameWithExceptID() throws SQLException {
         User user = us.getUserByUsername("0f77b858-3b2a-41d3-9921-d174f8600433", "abc");
         // Kiểm tra kết quả trả về
-        Assertions.assertNull(user);        
+        Assertions.assertNull(user);
     }
 
     @Test

@@ -535,7 +535,7 @@ public class EmployeeController implements Initializable {
                     searchBusTrip();
                 }
             } else {
-                Alert al = new Alert(Alert.AlertType.INFORMATION, "Đã qua 30 phút kể từ lần đặt vé đầu tiên, vé đã hủy");
+                Alert al = new Alert(Alert.AlertType.INFORMATION, "Còn ít hơn 30 phút trước giờ khởi hành, vé đã bị hủy");
                 al.show();
                 loadTableTicketData(txtSearchCustomer.getText());
                 searchBusTrip();
@@ -561,7 +561,7 @@ public class EmployeeController implements Initializable {
                 if (selectedItem.getStatus().equals("purchased")) {
                     Alert al = new Alert(Alert.AlertType.INFORMATION, "Vé đã mua");
                     al.show();
-                } else if (selectedItem.getTime().plusMinutes(30).isAfter(LocalDateTime.now())) {
+                } else if (!LocalDateTime.now().plusMinutes(30).isAfter(selectedItem.getDepartureTime())) {
                     ts.changeStatusToBuy(selectedItem);
                     Alert al = new Alert(Alert.AlertType.INFORMATION, "Thành công");
                     al.show();
@@ -571,7 +571,7 @@ public class EmployeeController implements Initializable {
                     al.show();
                 }
             } else {
-                Alert al = new Alert(Alert.AlertType.INFORMATION, "Đã qua 30 phút kể từ lần đặt vé đầu tiên, vé đã hủy");
+                Alert al = new Alert(Alert.AlertType.INFORMATION, "Còn ít hơn 30 phút trước giờ khởi hành, vé đã bị hủy");
                 al.show();
             }
         }
@@ -621,7 +621,7 @@ public class EmployeeController implements Initializable {
         ticketEditing = tbTicket.getSelectionModel().getSelectedItem() instanceof Ticket ? (Ticket) tbTicket.getSelectionModel().getSelectedItem() : null;
         Ticket tk = ts.getTicket(ticketEditing.getId());
         if (tk == null) {
-            Alert alert = new Alert(Alert.AlertType.WARNING, "Đã qua 30 phút kể từ lần đặt vé đầu tiên, đã bị hủy", ButtonType.OK);
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Còn ít hơn 30 phút trước giờ khởi hành, vé đã bị hủy", ButtonType.OK);
             alert.showAndWait();
             loadTableTicketData(txtSearchCustomer.getText());
             searchBusTrip();
@@ -787,12 +787,14 @@ public class EmployeeController implements Initializable {
                 tabViewTicket.setVisible(true);
                 tabChangeTicket.setVisible(false);
                 
-            } else {
-                Alert al = new Alert(Alert.AlertType.WARNING, "Đã có lỗi xảy ra, có thể đã qua 30 phút kể từ lần đặt vé đầu tiên", ButtonType.OK);
+            } 
+            else {
+                Alert al = new Alert(Alert.AlertType.WARNING, "Đã có lỗi xảy ra, vé đã bị hủy vì còn ít hơn 30 phút trước giờ khởi hành", ButtonType.OK);
                 al.showAndWait();
             }
 
         }
+        
 
     }
 

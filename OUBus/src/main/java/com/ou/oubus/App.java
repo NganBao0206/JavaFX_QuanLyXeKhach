@@ -10,6 +10,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.sql.SQLException;
 import javafx.event.EventHandler;
+import javafx.scene.image.Image;
 import javafx.stage.WindowEvent;
 
 /**
@@ -25,6 +26,7 @@ public class App extends Application {
         Executor.getInstance();
         scene = new Scene(loadFXML("login"));
         stage.setScene(getScene());
+        stage.setTitle("OUBus");
         stage.show();
         App.stage = stage;
         stage.setOnCloseRequest((WindowEvent event) -> {

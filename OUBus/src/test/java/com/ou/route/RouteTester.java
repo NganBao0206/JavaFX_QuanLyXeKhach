@@ -16,8 +16,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
@@ -28,6 +26,7 @@ import org.junit.jupiter.api.Assertions;
  * @author yuumm
  */
 public class RouteTester {
+
     private static Connection conn;
     public static RouteService rs;
 
@@ -43,7 +42,8 @@ public class RouteTester {
             conn.close();
         }
     }
-    @Test 
+
+    @Test
     void testUnique() throws SQLException {
         Statement stm = conn.createStatement();
         ResultSet rs = stm.executeQuery("SELECT * FROM Route");
@@ -58,7 +58,7 @@ public class RouteTester {
 
         Assertions.assertEquals(kq.size(), kq2.size());
     }
-    
+
     @Test
     void testGetRoutes() throws SQLException {
         List<Route> routes = rs.getRoutes("Đà Nẵng", "");
@@ -148,26 +148,22 @@ public class RouteTester {
     }
 
     @Test
-    void testAddRoute() {
+    void testAddRoute() throws SQLException {
         Route r = new Route(3, 2, 300, 1200);
-        try {
-            boolean actual = rs.addRoute(r);
-            Assertions.assertTrue(actual);
+        boolean actual = rs.addRoute(r);
+        Assertions.assertTrue(actual);
 
-            String sql = "SELECT * FROM Route WHERE id=?";
-            PreparedStatement stm = conn.prepareCall(sql);
-            stm.setString(1, r.getId());
+        String sql = "SELECT * FROM Route WHERE id=?";
+        PreparedStatement stm = conn.prepareCall(sql);
+        stm.setString(1, r.getId());
 
-            ResultSet rs = stm.executeQuery();
-            Assertions.assertNotNull(rs.next());
-            Assertions.assertEquals(r.getId(), rs.getString("ID"));
-            Assertions.assertEquals(3, rs.getInt("DepartureID"));
-            Assertions.assertEquals(2, rs.getInt("DestinationID"));
-            Assertions.assertEquals(300, rs.getDouble("Price"));
-            Assertions.assertEquals(1200, rs.getInt("TotalTime"));
-        } catch (SQLException ex) {
-            Logger.getLogger(RouteTester.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        ResultSet rs = stm.executeQuery();
+        Assertions.assertNotNull(rs.next());
+        Assertions.assertEquals(r.getId(), rs.getString("ID"));
+        Assertions.assertEquals(3, rs.getInt("DepartureID"));
+        Assertions.assertEquals(2, rs.getInt("DestinationID"));
+        Assertions.assertEquals(300, rs.getDouble("Price"));
+        Assertions.assertEquals(1200, rs.getInt("TotalTime"));
     }
 
     @Test
@@ -185,7 +181,7 @@ public class RouteTester {
         ResultSet rs = stm.executeQuery();
         Assertions.assertFalse(rs.next());
     }
-    
+
     @Test
     void testEditRoute() throws SQLException {
         Route route = new Route();

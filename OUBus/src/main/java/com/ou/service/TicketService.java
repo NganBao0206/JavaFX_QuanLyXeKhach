@@ -181,11 +181,11 @@ public class TicketService {
     public List<Ticket> getInvalidTickets() throws SQLException {
         List<Ticket> tickets = new ArrayList<>();
         try (Connection conn = JdbcUtils.getConn()) {
-            String sql = "SELECT * FROM ticket WHERE DATE_ADD(time, INTERVAL 30 MINUTE) < NOW() AND status = 'booked' ";
+            String sql = "SELECT * FROM ticket t, bustrip b WHERE b.ID = t.BusTripID AND status = 'booked' AND DATE_ADD(NOW(), INTERVAL 30 MINUTE) > DepartureTime";
             PreparedStatement stm = conn.prepareCall(sql);
             ResultSet rs = stm.executeQuery();
             while (rs.next()) {
-                String id = rs.getString("ID");
+                String id = rs.getString("t.ID");
                 String customerID = rs.getString("CustomerID");
                 Ticket t = new Ticket();
                 t.setId(id);

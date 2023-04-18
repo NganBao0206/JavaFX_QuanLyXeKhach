@@ -77,6 +77,13 @@ public class ItemLocationController implements Initializable {
                 Location check = ls.getLocation(Integer.parseInt(txtId.getText()), formatString(txtName.getText()));
                 if (check == null) {
                     Location lct = new Location(Integer.parseInt(txtId.getText()), formatString(txtName.getText()));
+                    if (lct.getName().isBlank())
+                    {
+                        Alert warning = new Alert(AlertType.ERROR);
+                        warning.setHeaderText("Không được để tên địa điểm trống");
+                        warning.showAndWait();
+                        return -1;
+                    }
                     btnEdit.getStyleClass().remove("isPressed");
                     txtName.setEditable(false);
                     if (ls.editLocation(lct)) {

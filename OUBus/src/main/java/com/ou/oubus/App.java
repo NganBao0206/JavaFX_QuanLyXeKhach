@@ -27,6 +27,8 @@ public class App extends Application {
         scene = new Scene(loadFXML("login"));
         stage.setScene(getScene());
         stage.setTitle("OUBus");
+        Image image = new Image(getClass().getResourceAsStream("/com/ou/images/logo3.png"));
+        stage.getIcons().add(image);
         stage.show();
         App.stage = stage;
         stage.setOnCloseRequest((WindowEvent event) -> {

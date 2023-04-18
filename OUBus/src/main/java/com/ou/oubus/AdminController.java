@@ -159,12 +159,14 @@ public class AdminController implements Initializable {
             boxSearchRouteExtra.setManaged(false);
             loadItemLocation(null);
             this.txtSearchLocation.textProperty().addListener(e -> {
+                editButtonCurrent = null;
                 loadItemLocation(txtSearchLocation.getText());
             });
 
             boxSearchRouteExtraEdit.setManaged(false);
             loadItemLocation(null);
             this.txtSearchLocation.textProperty().addListener(e -> {
+                editButtonCurrent = null;
                 loadItemLocation(txtSearchLocation.getText());
             });
 
@@ -500,6 +502,7 @@ public class AdminController implements Initializable {
         selectedTab.setVisible(true);
         txtSearchLocation.setText("");
         txtNewLocation.setText("");
+        editButtonCurrent = null;
         loadItemLocation("");
     }
 

@@ -65,6 +65,14 @@ public class EmployeeController implements Initializable {
     private ComboBox cbEnd;
     @FXML
     private DatePicker date;
+    
+    @FXML
+    private ComboBox cbStartTicket;
+    @FXML
+    private ComboBox cbEndTicket;
+    @FXML
+    private DatePicker dateTicket;
+    
     @FXML
     private AnchorPane tabChooseBuy;
     @FXML
@@ -107,7 +115,7 @@ public class EmployeeController implements Initializable {
             loadTableBusTripColumns();
             loadTableTicketColumns();
             loadTableBusTripData(null, -1, -1);
-            loadTableTicketData(null);
+            loadTableTicketData(null, null, -1, -1);
             getLocations();
 
             LocationService ls = new LocationService();
@@ -117,7 +125,7 @@ public class EmployeeController implements Initializable {
             cbDestination.setItems(FXCollections.observableList(listloc));
             this.txtSearchCustomer.textProperty().addListener(e -> {
                 try {
-                    loadTableTicketData(txtSearchCustomer.getText());
+                     searchTicket();
                 } catch (SQLException ex) {
                     Logger.getLogger(EmployeeController.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -232,9 +240,11 @@ public class EmployeeController implements Initializable {
     private void getLocations() throws SQLException {
         LocationService ls = new LocationService();
         List<Location> l = ls.getLocations();
-
+        l.add(null);
         this.cbStart.setItems(FXCollections.observableList(l));
         this.cbEnd.setItems(FXCollections.observableList(l));
+        this.cbStartTicket.setItems(FXCollections.observableList(l));
+        this.cbEndTicket.setItems(FXCollections.observableList(l));
     }
 
     public void searchBusTrip() throws SQLException {
@@ -291,7 +301,7 @@ public class EmployeeController implements Initializable {
                 if (bt.getEmptySeats() == 0) {
                     Alert alert = new Alert(Alert.AlertType.ERROR, "Chuyến xe đã hết chỗ ngồi", ButtonType.OK);
                     alert.showAndWait();
-                    loadTableTicketData(txtSearchCustomer.getText());
+                    searchTicket();
                     searchBusTrip();
                     return;
                 }
@@ -394,7 +404,7 @@ public class EmployeeController implements Initializable {
                 }
                 tabChooseBuy.setVisible(true);
                 tabComfirmBuy.setVisible(false);
-                loadTableTicketData(txtSearchCustomer.getText());
+                searchTicket();
                 searchBusTrip();
             } else {
                 Alert al = new Alert(Alert.AlertType.INFORMATION, "Còn 5 phút nữa là xe khởi hành, bạn không thể mua vé");
@@ -446,7 +456,7 @@ public class EmployeeController implements Initializable {
                 al.showAndWait();
                 tabChooseBuy.setVisible(true);
                 tabComfirmBuy.setVisible(false);
-                loadTableTicketData(txtSearchCustomer.getText());
+                searchTicket();
                 searchBusTrip();
             } else {
                 Alert al = new Alert(Alert.AlertType.INFORMATION, "Bạn không thể đặt vé trước 60 phút xe khởi hành");
@@ -503,10 +513,23 @@ public class EmployeeController implements Initializable {
         this.tbTicket.getColumns().setAll(col, colCusName, colPhone, colSeatName, colStaffName, colStatus, colPrice, colDeparture, colDestination, colDepartureTime, Time);
     }
 
-    private void loadTableTicketData(String keyword) throws SQLException {
-        List<Ticket> lt = ts.getTickets(keyword);
+    private void loadTableTicketData(String keyword, LocalDate date, int start, int end) throws SQLException {
+        List<Ticket> lt = ts.getTickets(keyword, date, start, end);
         this.tbTicket.getItems().clear();
         this.tbTicket.setItems(FXCollections.observableList(lt));
+    }
+    
+    public void searchTicket() throws SQLException {
+        String keyword = txtSearchCustomer.getText();
+        LocalDate startDate = dateTicket.getValue();
+        Object s = cbStartTicket.getSelectionModel().getSelectedItem();
+        Object e = cbEndTicket.getSelectionModel().getSelectedItem();
+        Location startLocation = s != null && s instanceof Location? (Location) s : null;
+        Location endLocation = e != null && e instanceof Location? (Location) e : null;
+        int startId = startLocation != null? startLocation.getId() : -1;
+        int endId = endLocation != null? endLocation.getId() : -1;
+        
+        loadTableTicketData(keyword, startDate, startId, endId);
     }
 
     public void delTicket() throws SQLException {
@@ -531,13 +554,14 @@ public class EmployeeController implements Initializable {
                 if (ts.deleteTicket(id) == true) {
                     Alert announce = new Alert(Alert.AlertType.INFORMATION, "Hủy vé thành công");
                     announce.showAndWait();
-                    loadTableTicketData(txtSearchCustomer.getText());
+                    
+                    searchTicket();
                     searchBusTrip();
                 }
             } else {
                 Alert al = new Alert(Alert.AlertType.INFORMATION, "Còn ít hơn 30 phút trước giờ khởi hành, vé đã bị hủy");
                 al.show();
-                loadTableTicketData(txtSearchCustomer.getText());
+                searchTicket();
                 searchBusTrip();
             }
            
@@ -565,7 +589,7 @@ public class EmployeeController implements Initializable {
                     ts.changeStatusToBuy(selectedItem);
                     Alert al = new Alert(Alert.AlertType.INFORMATION, "Thành công");
                     al.show();
-                    loadTableTicketData(txtSearchCustomer.getText());
+                    searchTicket();
                 } else {
                     Alert al = new Alert(Alert.AlertType.INFORMATION, "Không thể đặt vé vì thời gian đặt quá 30 phút");
                     al.show();
@@ -623,7 +647,7 @@ public class EmployeeController implements Initializable {
         if (tk == null) {
             Alert alert = new Alert(Alert.AlertType.WARNING, "Còn ít hơn 30 phút trước giờ khởi hành, vé đã bị hủy", ButtonType.OK);
             alert.showAndWait();
-            loadTableTicketData(txtSearchCustomer.getText());
+            searchTicket();
             searchBusTrip();
             return;
         }
@@ -783,7 +807,7 @@ public class EmployeeController implements Initializable {
             if (ts.editTicket(ticketEditing)) {
                 Alert al = new Alert(Alert.AlertType.INFORMATION, "Đổi thành công", ButtonType.OK);
                 al.showAndWait();
-                loadTableTicketData(txtSearchCustomer.getText());
+                searchTicket();
                 tabViewTicket.setVisible(true);
                 tabChangeTicket.setVisible(false);
                 

@@ -831,27 +831,49 @@
                <children>
                   <AnchorPane fx:id="tabViewTicket" prefHeight="200.0" prefWidth="200.0">
                      <children>
-                        <Text layoutX="30.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20;" styleClass="titleText" text="Danh sách vé đã đặt" />
-                        <TableView fx:id="tbTicket" layoutX="30.0" layoutY="80.0" prefHeight="300.0" prefWidth="845.0" />
+                        <Text layoutX="30.0" layoutY="30.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20;" styleClass="titleText" text="Danh sách vé đã đặt" />
+                        <TableView fx:id="tbTicket" layoutX="30.0" layoutY="111.0" prefHeight="269.0" prefWidth="846.0" />
                         <Button fx:id="btnCancel" layoutX="400.0" layoutY="400.0" mnemonicParsing="false" onAction="#delTicket" prefHeight="40.0" prefWidth="100.0" style="-fx-background-color: FC2947;" styleClass="btnGreen" text="Hủy vé" />
                         <Button fx:id="btnBookToBuy" layoutX="675.0" layoutY="400.0" mnemonicParsing="false" onAction="#changeBookToBuy" prefHeight="40.0" prefWidth="200.0" styleClass="btnGreen" text="Xác nhận khách đã mua" />
                         <Button fx:id="btnEdit" layoutX="525.0" layoutY="400.0" mnemonicParsing="false" onAction="#editSeat" prefHeight="40.0" prefWidth="125.0" styleClass="btnPurple" text="Đổi vé" />
-                        <HBox alignment="CENTER" layoutX="575.0" layoutY="21.0" maxHeight="1.7976931348623157E308" maxWidth="300.0" prefHeight="33.0" prefWidth="300.0" styleClass="box-input2">
+                        <Button fx:id="btnExportTicket" layoutX="30.0" layoutY="400.0" mnemonicParsing="false" onAction="#exportTicket" prefHeight="40.0" prefWidth="125.0" style="-fx-background-color: #ffc300;" styleClass="btnGreen" text="Xuất vé" />
+                        <HBox alignment="CENTER" layoutX="30.0" layoutY="38.0" prefHeight="72.0" prefWidth="846.0" style="-fx-padding: 20 0 20 0; -fx-background-color: transparent;" styleClass="boxWhite">
                            <children>
-                              <TextField fx:id="txtSearchCustomer" prefHeight="38.0" prefWidth="297.0" promptText="Tìm kiếm tên khách hàng">
+                              <DatePicker fx:id="dateTicket" onAction="#searchTicket" prefHeight="36.0" prefWidth="172.0" promptText="Ngày khởi hành" style="-fx-font-size: 14; -fx-background-color: transparemt; -fx-border-color: #9791a1; -fx-border-radius: 16;">
                                  <styleClass>
-                                    <String fx:value="input" />
+                                    <String fx:value="myDatePicker" />
                                     <String fx:value="normalText" />
                                  </styleClass>
-                              </TextField>
-                              <BorderPane prefHeight="51.0" prefWidth="65.0">
-                                 <center>
-                                    <SVGPath content="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" styleClass="dark" BorderPane.alignment="CENTER" />
-                                 </center>
-                              </BorderPane>
+                              </DatePicker>
+                              <ComboBox fx:id="cbStartTicket" onAction="#searchTicket" prefHeight="36.0" prefWidth="150.0" promptText="Điểm xuât phát" style="-fx-font-size: 14; -fx-border-color: #9791a1; -fx-border-radius: 15; -fx-background-color: transparent;">
+                                 <styleClass>
+                                    <String fx:value="boxGray" />
+                                    <String fx:value="normalText" />
+                                 </styleClass>
+                              </ComboBox>
+                              <ComboBox fx:id="cbEndTicket" onAction="#searchTicket" prefHeight="36.0" prefWidth="150.0" promptText="Điểm đến" style="-fx-font-size: 14; -fx-border-radius: 15; -fx-border-color: #9791a1; -fx-background-color: transparent;">
+                                 <styleClass>
+                                    <String fx:value="boxGray" />
+                                    <String fx:value="normalText" />
+                                 </styleClass>
+                              </ComboBox>
+                              <HBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="300.0" prefHeight="18.0" prefWidth="211.0" style="-fx-padding: 0 10 0 10;" styleClass="box-input2">
+                                 <children>
+                                    <TextField fx:id="txtSearchCustomer" prefHeight="38.0" prefWidth="297.0" promptText="Tìm tên khách " style="-fx-font-size: 14;">
+                                       <styleClass>
+                                          <String fx:value="input" />
+                                          <String fx:value="normalText" />
+                                       </styleClass>
+                                    </TextField>
+                                    <BorderPane prefHeight="51.0" prefWidth="65.0">
+                                       <center>
+                                          <SVGPath content="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z" styleClass="dark" BorderPane.alignment="CENTER" />
+                                       </center>
+                                    </BorderPane>
+                                 </children>
+                              </HBox>
                            </children>
                         </HBox>
-                        <Button fx:id="btnExportTicket" layoutX="30.0" layoutY="400.0" mnemonicParsing="false" onAction="#exportTicket" prefHeight="40.0" prefWidth="125.0" style="-fx-background-color: #ffc300;" styleClass="btnGreen" text="Xuất vé" />
                      </children></AnchorPane>
                   <AnchorPane fx:id="tabChangeTicket" layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="200.0" visible="false">
                      <children>

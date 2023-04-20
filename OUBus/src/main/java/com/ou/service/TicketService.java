@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -67,8 +68,7 @@ public class TicketService {
         return tickets;
     }
 
-    public Ticket getTicket(String id) throws SQLException
-    {
+    public Ticket getTicket(String id) throws SQLException {
         Ticket t = null;
         try (Connection conn = JdbcUtils.getConn()) {
             String sql = "SELECT * "
@@ -77,7 +77,7 @@ public class TicketService {
                     + "AND t.CustomerID = c.ID AND t.BusTripID = bt.ID "
                     + "AND bt.BusID = b.ID AND bt.routeID = r.ID "
                     + "AND r.DepartureID = l1.ID AND r.DestinationID = l2.ID ";
-            
+
             PreparedStatement stm = conn.prepareCall(sql);
             stm.setString(1, id);
             ResultSet rs = stm.executeQuery();
@@ -106,8 +106,8 @@ public class TicketService {
         return t;
 
     }
-    
-    public List<Ticket> getTickets(String keyword) throws SQLException {
+
+    public List<Ticket> getTickets(String keyword, LocalDate date, int startId, int endId) throws SQLException {
         List<Ticket> tickets = new ArrayList<>();
         try (Connection conn = JdbcUtils.getConn()) {
             String sql = "SELECT * "
@@ -116,12 +116,32 @@ public class TicketService {
                     + "AND t.CustomerID = c.ID AND t.BusTripID = bt.ID "
                     + "AND bt.BusID = b.ID AND bt.routeID = r.ID "
                     + "AND r.DepartureID = l1.ID AND r.DestinationID = l2.ID ";
+
             if (keyword != null && !keyword.isEmpty()) {
                 sql += " and c.Name like concat('%', ?, '%')";
             }
+            if (date != null) {
+                sql += " AND DATE(bt.DepartureTime) = ?";
+            }
+            if (startId != -1) {
+                sql += " AND r.DepartureID = ?";
+            }
+            if (endId != -1) {
+                sql += " AND r.DestinationID = ?";
+            }
+            int index = 1;
             PreparedStatement stm = conn.prepareCall(sql);
             if (keyword != null && !keyword.isEmpty()) {
-                stm.setString(1, keyword);
+                stm.setString(index++, keyword);
+            }
+            if (date != null) {
+                stm.setObject(index++, date);
+            }
+            if (startId != -1) {
+                stm.setInt(index++, startId);
+            }
+            if (endId != -1) {
+                stm.setInt(index, endId);
             }
             ResultSet rs = stm.executeQuery();
             while (rs.next()) {
@@ -218,7 +238,7 @@ public class TicketService {
             }
         }
     }
-    
+
     public int getAmountTicketOfCustomer(String customerId) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
             conn.setAutoCommit(false);
@@ -233,7 +253,6 @@ public class TicketService {
             return 0;
         }
     }
-    
 
     public List<StatisticalValue> getMonthlyRevenue(int year, int month) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
@@ -247,12 +266,12 @@ public class TicketService {
             while (rs.next()) {
                 String label = rs.getString(1);
                 double value = rs.getDouble(2);
-                results.add(new StatisticalValue(label, value*1000));           
+                results.add(new StatisticalValue(label, value * 1000));
             }
             return results;
         }
     }
-    
+
     public StatisticalValue getAvergePercentageSeat(int year, int month) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
             conn.setAutoCommit(false);
@@ -264,7 +283,7 @@ public class TicketService {
             sql += "CROSS JOIN seat s LEFT JOIN ticket t ON t.BusTripID = bt.ID WHERE YEAR(bt.DepartureTime) = ? AND MONTH(bt.DepartureTime) = ? ";
             sql += "GROUP BY bt.ID ) AS subquery";
             PreparedStatement stm = conn.prepareCall(sql);
-            stm.setInt(1,year);
+            stm.setInt(1, year);
             stm.setInt(2, month);
             ResultSet rs = stm.executeQuery();
             if (rs.next()) {
@@ -272,15 +291,15 @@ public class TicketService {
             }
             return results;
         }
-    }    
-    
+    }
+
     public List<Number> getTotalTicket(int year, int month) throws SQLException {
         try (Connection conn = JdbcUtils.getConn()) {
             conn.setAutoCommit(false);
             List<Number> results = new ArrayList<>();
             String sql = "SELECT Count(t.id), SUM(t.TicketPrice) FROM Ticket t, busTrip bt WHERE YEAR(bt.DepartureTime) = ? AND MONTH(bt.DepartureTime) = ? AND t.BusTripID = bt.ID AND t.Status = 'purchased'";
             PreparedStatement stm = conn.prepareCall(sql);
-            stm.setInt(1,year);
+            stm.setInt(1, year);
             stm.setInt(2, month);
             ResultSet rs = stm.executeQuery();
             if (rs.next()) {
